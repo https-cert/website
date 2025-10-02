@@ -4,6 +4,9 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://doc.anssl.cn',
+	// base: '/doc/',
+
 	integrations: [
 		starlight({
 			title: 'anssl',
@@ -12,7 +15,7 @@ export default defineConfig({
 			logo: {
 				src: './src/assets/logo.png',
 			},
-			favicon: './src/assets/logo.png',
+			favicon: './public/favicon.ico',
 
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/https-cert/website' }],
 			sidebar: [
