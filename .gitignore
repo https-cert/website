@@ -23,3 +23,4 @@ pnpm-debug.log*
 release
 .vscode
 pnpm-lock.yaml
+CLAUDE.md

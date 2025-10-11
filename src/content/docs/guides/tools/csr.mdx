@@ -1,11 +1,340 @@
 ---
 title: CSR 生成
-description: A guide in my new Starlight docs site.
+description: 生成证书签名请求（CSR）和私钥，用于申请 SSL 证书
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+import { Aside, Steps } from "@astrojs/starlight/components";
 
-## Further reading
+CSR（Certificate Signing Request，证书签名请求）是申请 SSL 证书时必需的文件，包含您的域名、组织信息和公钥。anssl 提供简单易用的 CSR 生成工具，帮助您快速生成符合标准的 CSR 文件。
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+## 什么是 CSR？
+
+CSR 是一个包含以下信息的文本文件：
+
+- **域名信息**：要保护的域名或通配符域名
+- **组织信息**：公司名称、部门、所在地等
+- **公钥**：用于加密的公钥信息
+- **签名算法**：使用的加密算法（RSA/ECC）
+
+当您向 CA 机构申请证书时，需要提交 CSR 文件。CA 机构会验证信息后，签发对应的 SSL 证书。
+
+<Aside type="note">
+  生成 CSR 的同时会创建一个私钥文件，私钥需要妥善保管，不能泄露给任何人。
+</Aside>
+
+## 使用 CSR 生成工具
+
+<Steps>
+
+1. **访问工具页面**
+
+   访问 [CSR 生成工具](https://anssl.cn/console/tools/csr) 页面
+
+2. **填写域名信息**
+
+   - **通用名称（CN）**：主域名，如 `example.com` 或 `*.example.com`
+   - **备用名称（SAN）**：可选，添加额外的域名
+
+3. **填写组织信息**
+
+   - **组织名称（O）**：公司或组织的法定名称
+   - **组织单位（OU）**：部门名称（可选）
+   - **国家（C）**：两位国家代码，如 CN、US
+   - **省份（ST）**：省份或州
+   - **城市（L）**：城市名称
+
+4. **选择签名算法**
+
+   - **RSA-2048**：最常用，兼容性好
+   - **RSA-3072**：更高安全级别
+   - **RSA-4096**：最高安全级别
+   - **ECC P-256**：推荐，性能优异
+   - **ECC P-384**：高安全级别
+
+5. **生成 CSR**
+
+   点击「生成」按钮，系统会生成：
+
+   - CSR 文件（提交给 CA 机构）
+   - 私钥文件（保存在本地）
+
+6. **下载文件**
+
+   立即下载并保存 CSR 和私钥文件
+
+</Steps>
+
+<Aside type="danger">
+  **重要**：私钥文件只会显示一次，请务必立即下载保存。私钥丢失后无法恢复，需要重新生成
+  CSR。
+</Aside>
+
+## 字段说明
+
+### 通用名称（Common Name - CN）
+
+证书要保护的主域名：
+
+- **单域名**：`example.com` 或 `www.example.com`
+- **通配符**：`*.example.com`（保护所有子域名）
+
+<Aside type="caution">
+  CN 字段只能填写一个域名。如果需要保护多个域名，应使用 SAN（Subject Alternative
+  Name）字段。
+</Aside>
+
+### 备用名称（Subject Alternative Name - SAN）
+
+用于保护多个域名的证书：
+
+```
+example.com
+www.example.com
+blog.example.com
+shop.example.com
+```
+
+### 组织信息
+
+用于 OV 和 EV 证书，需要填写准确的信息：
+
+- **组织名称（O）**：与营业执照一致的法定名称
+- **组织单位（OU）**：部门名称，如"IT Department"（可选）
+- **国家（C）**：ISO 3166 两位国家代码
+- **省份（ST）**：完整的省份或州名称
+- **城市（L）**：完整的城市名称
+
+示例：
+
+```
+O = Example Inc.
+OU = IT Department
+C = CN
+ST = Beijing
+L = Beijing
+```
+
+<Aside type="tip">
+  对于 DV（域名验证）证书，组织信息可以简化填写或留空。但对于 OV/EV
+  证书，必须准确填写并提供营业执照等证明文件。
+</Aside>
+
+## 签名算法选择
+
+### RSA 算法
+
+**优点**：
+
+- 兼容性最好，所有浏览器和客户端都支持
+- 成熟稳定，广泛使用
+
+**缺点**：
+
+- 密钥长度较长（2048-4096 位）
+- 性能开销较大
+- 证书文件较大
+
+**推荐场景**：
+
+- 需要兼容老旧设备和浏览器
+- 对性能要求不高的场景
+
+### ECC 算法（推荐）
+
+**优点**：
+
+- 密钥短，相同安全级别下只需 256 位
+- 性能优异，加解密速度快
+- 证书文件小，节省带宽
+
+**缺点**：
+
+- 极少数老旧设备可能不支持
+
+**推荐场景**：
+
+- 现代 Web 应用（推荐）
+- 移动应用
+- 高并发场景
+- IoT 设备
+
+### 算法对比
+
+| 算法      | 密钥长度 | 等效安全级别 | 性能  | 兼容性 |
+| --------- | -------- | ------------ | ----- | ------ |
+| RSA-2048  | 2048 位  | 基准         | ★★★☆☆ | ★★★★★  |
+| RSA-3072  | 3072 位  | 高           | ★★☆☆☆ | ★★★★★  |
+| RSA-4096  | 4096 位  | 很高         | ★☆☆☆☆ | ★★★★★  |
+| ECC P-256 | 256 位   | ≈ RSA-3072   | ★★★★★ | ★★★★☆  |
+| ECC P-384 | 384 位   | ≈ RSA-7680   | ★★★★☆ | ★★★★☆  |
+
+<Aside type="tip">
+  **推荐选择 ECC P-256**：提供与 RSA-3072 相当的安全性，但性能更优，是 2024
+  年的最佳选择。
+</Aside>
+
+## 生成的文件
+
+### CSR 文件示例
+
+```
+-----BEGIN CERTIFICATE REQUEST-----
+MIICvDCCAaQCAQAwdzELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAO
+BgNVBAcMB0JlaWppbmcxFDASBgNVBAoMC0V4YW1wbGUgSW5jMRYwFAYDVQQLDA1J
+VCBEZXBhcnRtZW50MRYwFAYDVQQDDA1leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcN
+...
+-----END CERTIFICATE REQUEST-----
+```
+
+### 私钥文件示例
+
+```
+-----BEGIN PRIVATE KEY-----
+MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDU7VR5K3Y0K5K3
+hZRHmNb2M8F2qKLHqLXqAGYWqLXqAGYWqLXqAGYWqLXqAGYWqLXqAGYW...
+-----END PRIVATE KEY-----
+```
+
+<Aside type="danger">
+  私钥文件包含敏感信息，**绝对不能**： - 上传到公共代码仓库（Git/SVN） -
+  通过邮件或即时通讯工具传输 - 存储在不安全的位置 - 与他人分享
+</Aside>
+
+## 验证 CSR
+
+生成 CSR 后，可以验证内容是否正确：
+
+### 在线验证
+
+使用 anssl 的 CSR 验证工具，或使用 OpenSSL 命令：
+
+```bash
+openssl req -text -noout -verify -in example.csr
+```
+
+输出示例：
+
+```
+verify OK
+Certificate Request:
+    Data:
+        Version: 1 (0x0)
+        Subject: C = CN, ST = Beijing, L = Beijing, O = Example Inc, CN = example.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+```
+
+### 检查项目
+
+验证以下信息：
+
+- ✅ 域名是否正确
+- ✅ 组织信息是否准确
+- ✅ 签名算法是否符合预期
+- ✅ 公钥长度是否正确
+
+## 使用 CSR 申请证书
+
+### 方式一：通过 anssl 平台
+
+anssl 会自动为您生成 CSR，无需手动创建。
+
+### 方式二：使用自己生成的 CSR
+
+如果使用外部 CA 机构：
+
+1. 将 CSR 内容复制到 CA 机构的申请表单
+2. 完成域名验证
+3. 等待 CA 签发证书
+4. 下载证书文件
+5. 将证书和之前保存的私钥一起部署到服务器
+
+<Aside type="caution">
+  确保使用的私钥与 CSR 是配对的。使用错误的私钥会导致 HTTPS 无法正常工作。
+</Aside>
+
+## 命令行生成 CSR
+
+如果您熟悉命令行，也可以使用 OpenSSL 生成 CSR：
+
+### 生成 RSA CSR
+
+```bash
+# 一步生成私钥和 CSR
+openssl req -new -newkey rsa:2048 -nodes \
+  -keyout example.com.key \
+  -out example.com.csr \
+  -subj "/C=CN/ST=Beijing/L=Beijing/O=Example Inc/CN=example.com"
+```
+
+### 生成 ECC CSR
+
+```bash
+# 先生成 ECC 私钥
+openssl ecparam -genkey -name prime256v1 -out example.com.key
+
+# 再生成 CSR
+openssl req -new -key example.com.key \
+  -out example.com.csr \
+  -subj "/C=CN/ST=Beijing/L=Beijing/O=Example Inc/CN=example.com"
+```
+
+### 添加 SAN 扩展
+
+创建配置文件 `san.cnf`：
+
+```ini
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+
+[req_distinguished_name]
+countryName = Country Name
+stateOrProvinceName = State or Province Name
+localityName = Locality Name
+organizationName = Organization Name
+commonName = Common Name
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = example.com
+DNS.2 = www.example.com
+DNS.3 = blog.example.com
+```
+
+生成 CSR：
+
+```bash
+openssl req -new -key example.com.key \
+  -out example.com.csr \
+  -config san.cnf \
+  -subj "/C=CN/ST=Beijing/L=Beijing/O=Example Inc/CN=example.com"
+```
+
+## 常见问题
+
+### CSR 和私钥丢失了怎么办？
+
+如果私钥丢失：
+
+- 无法使用已颁发的证书
+- 需要重新生成 CSR 和私钥
+- 重新申请证书
+
+<Aside type="tip">
+  建议将私钥加密后备份到安全的位置，如密码管理器或加密存储。
+</Aside>
+
+### 可以用同一个 CSR 申请多次证书吗？
+
+可以，但不推荐。最佳实践是：
+
+- 每次申请证书都生成新的 CSR 和私钥
+- 定期轮换私钥，提高安全性
+
+### CSR 中的组织信息可以修改吗？
+
+CSR 生成后无法修改，如需修改需要重新生成。但对于 DV 证书，CA 机构不会验证组织信息，所以影响不大。

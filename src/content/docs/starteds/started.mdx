@@ -1,11 +1,325 @@
 ---
 title: 快速开始
-description: A guide in my new Starlight docs site.
+description: 五分钟快速上手 anssl，申请您的第一张免费 SSL 证书
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+import { Aside, Steps, Card, CardGrid } from "@astrojs/starlight/components";
 
-## Further reading
+欢迎使用 anssl！本指南将帮助您在 5 分钟内完成账号注册并申请第一张免费 SSL 证书。
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+## 前置准备
+
+在开始之前，请确保您具备：
+
+- ✅ 一个有效的邮箱地址
+- ✅ 一个已注册的域名
+- ✅ 域名的 DNS 管理权限（用于验证域名所有权）
+
+<Aside type="tip">
+  如果您还没有域名，建议先在域名注册商（如阿里云、腾讯云、GoDaddy
+  等）注册一个域名。
+</Aside>
+
+## 第一步：注册账号
+
+<Steps>
+
+1. **访问注册页面**
+
+   打开 [anssl 注册页面](https://anssl.cn/register)
+
+2. **填写注册信息**
+
+   - 邮箱地址
+   - 设置密码（至少 8 位，包含字母和数字）
+   - 确认密码
+
+3. **完成注册**
+
+   点击「注册」按钮，系统会发送验证邮件到您的邮箱
+
+4. **验证邮箱**
+
+   打开邮箱，点击验证链接完成邮箱验证
+
+</Steps>
+
+## 第二步：登录控制台
+
+注册完成后：
+
+1. 访问 [登录页面](https://anssl.cn/login)
+2. 输入邮箱和密码
+3. 点击「登录」进入控制台
+
+首次登录会看到欢迎页面和快速导航。
+
+## 第三步：申请免费证书
+
+<Steps>
+
+1. **进入证书管理**
+
+   在左侧菜单点击「证书管理」，进入证书列表页面
+
+2. **创建新证书**
+
+   点击右上角的「新建证书」按钮
+
+3. **选择证书类型**
+
+   根据需求选择：
+
+   - **单域名证书**：保护一个域名（如 `example.com`）
+   - **通配符证书**：保护主域名及所有子域名（如 `*.example.com`）
+   - **多域名证书**：一张证书保护多个不同域名
+
+4. **填写域名信息**
+
+   - 输入要保护的域名（如 `example.com`）
+   - 如果是通配符证书，输入 `*.example.com`
+
+5. **选择 CA 机构**
+
+   推荐选择：
+
+   - **Let's Encrypt**：最流行的免费证书
+   - **ZeroSSL**：同样免费，备选方案
+   - **Google Trust Services**：Google 提供的免费证书
+
+6. **选择签名算法**
+
+   推荐选择 **ECC P-256**（性能好、安全性高）
+
+   如需兼容老旧系统，选择 **RSA-2048**
+
+7. **选择验证方式**
+
+   系统支持三种验证方式：
+
+   **DNS 验证**（推荐）：
+
+   - 在域名 DNS 添加 TXT 记录
+   - 适合所有类型的证书
+   - 支持通配符证书
+
+   **HTTP 验证** (后续支持)：
+
+   - 在网站根目录放置验证文件
+   - 适合已有网站的域名
+   - 不支持通配符证书
+
+8. **完成域名验证**
+
+9. **等待证书颁发**
+
+   验证通过后，CA 机构会自动颁发证书，通常在 1-5 分钟内完成
+
+10. **下载证书**
+
+    证书颁发后，点击「下载」按钮获取证书文件
+
+</Steps>
+
+<Aside type="tip">
+  DNS 记录生效通常需要 5-30 分钟，如果验证失败，请等待几分钟后重新申请。
+</Aside>
+
+## 第四步：部署证书到服务器
+
+### 方式一：手动部署
+
+下载证书后，根据您的服务器类型选择部署方式：
+
+#### Nginx
+
+1. 上传证书文件到服务器：
+
+```bash
+scp example.com.pem root@your-server:/etc/nginx/ssl/
+scp example.com.key root@your-server:/etc/nginx/ssl/
+```
+
+2. 修改 Nginx 配置：
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    ssl_certificate /etc/nginx/ssl/example.com.pem;
+    ssl_certificate_key /etc/nginx/ssl/example.com.key;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # 其他配置...
+}
+```
+
+3. 测试并重载配置：
+
+```bash
+nginx -t
+nginx -s reload
+```
+
+#### Apache
+
+1. 上传证书文件：
+
+```bash
+scp example.com.crt root@your-server:/etc/ssl/certs/
+scp example.com.key root@your-server:/etc/ssl/private/
+```
+
+2. 修改 Apache 配置：
+
+```apache
+<VirtualHost *:443>
+    ServerName example.com
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/example.com.crt
+    SSLCertificateKeyFile /etc/ssl/private/example.com.key
+
+    # 其他配置...
+</VirtualHost>
+```
+
+3. 重启 Apache：
+
+```bash
+systemctl restart apache2
+```
+
+### 方式二：自动部署
+
+anssl 支持证书自动部署功能：
+
+1. 进入「自动部署」页面
+2. 选择要部署的证书
+3. 配置部署目标（服务器信息或云平台凭证）
+4. 测试部署
+5. 启用自动部署
+
+详见 [自动部署文档](/guides/deploy)。
+
+## 第五步：验证证书
+
+部署完成后，验证证书是否正常工作：
+
+1. **浏览器访问**
+
+   在浏览器中访问 `https://yourdomain.com`，检查：
+
+   - 地址栏显示锁图标 🔒
+   - 没有安全警告
+   - 证书信息正确
+
+2. **在线工具检测**
+
+   使用 [SSL Labs](https://www.ssllabs.com/ssltest/) 测试：
+
+   - 访问 https://www.ssllabs.com/ssltest/
+   - 输入您的域名
+   - 查看评分和详细报告
+
+3. **命令行检测**
+
+   ```bash
+   openssl s_client -connect example.com:443 -servername example.com
+   ```
+
+<Aside type="tip">
+  如果看到 "Verify return code: 0 (ok)"，说明证书配置正确。
+</Aside>
+
+## 下一步
+
+恭喜！您已经成功申请并部署了第一张 SSL 证书。接下来可以：
+
+<CardGrid>
+  <Card title="域名监控" icon="magnifier">
+    设置证书到期监控，及时收到续期提醒
+
+    [了解更多 →](/guides/monitor)
+
+  </Card>
+
+  <Card title="自动部署" icon="rocket">
+    配置自动部署，证书续期后自动更新到服务器
+
+    [了解更多 →](/guides/deploy)
+
+  </Card>
+
+  <Card title="使用工具" icon="setting">
+    使用 WHOIS 查询、CSR 生成等实用工具
+
+    [了解更多 →](/guides/tools/whois)
+
+  </Card>
+</CardGrid>
+
+## 常见问题
+
+### 域名验证失败怎么办？
+
+**DNS 验证失败**：
+
+- 检查 CNAME 记录是否正确添加
+- 等待 DNS 记录生效（5-30 分钟）
+- 使用 `nslookup` 或 `dig` 命令检查记录
+
+**HTTP 验证失败**：
+
+- 确认验证文件可以通过 HTTP 访问
+- 检查防火墙和 CDN 配置
+- 确保没有重定向到 HTTPS
+
+### 证书部署后浏览器提示不安全？
+
+可能原因：
+
+- 证书文件路径配置错误
+- 私钥与证书不匹配
+- 缺少中间证书
+- 浏览器缓存问题
+
+解决方法：
+
+1. 检查服务器配置文件
+2. 使用 SSL Labs 测试诊断
+3. 清除浏览器缓存重试
+
+### 如何申请通配符证书？
+
+通配符证书只能使用 DNS 验证方式：
+
+1. 域名填写：`*.example.com`
+2. 选择 DNS 验证
+3. 添加 CNAME 解析记录
+4. 完成验证并获取证书
+
+### 免费证书和付费证书有什么区别？
+
+| 特性       | 免费证书 | 付费证书 |
+| ---------- | -------- | -------- |
+| 加密强度   | 相同     | 相同     |
+| 浏览器信任 | 相同     | 相同     |
+| 有效期     | 90 天    | 1-3 年   |
+| 验证类型   | DV       | DV/OV/EV |
+| 技术支持   | 社区     | 专业支持 |
+| 赔付保证   | 无       | 有       |
+
+对于个人网站和中小企业，免费 DV 证书完全够用。大型企业或有合规要求的场景建议使用 OV/EV 证书。
+
+## 获取帮助
+
+如果遇到问题：
+
+- 📖 查看 [FAQ 文档](/faq/faq)
+- 💬 加入社区讨论群
+- 📧 联系技术支持：contact@anssl.cn
+- 🐛 报告 Bug：[GitHub Issues](https://github.com/https-cert/website/issues)

@@ -1,11 +1,154 @@
 ---
-title: whois 查询
-description: A guide in my new Starlight docs site.
+title: WHOIS 查询
+description: 查询域名注册信息、到期时间和 DNS 配置等关键信息
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+import { Aside } from "@astrojs/starlight/components";
 
-## Further reading
+WHOIS 是一个查询域名注册信息的协议，通过 anssl 的 WHOIS 查询工具，您可以快速获取域名的注册信息、到期时间、DNS 服务器等重要信息。
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+## 使用 WHOIS 查询
+
+访问 [WHOIS 查询工具](https://anssl.cn/console/tools/whois) 页面：
+
+1. 输入要查询的域名（如 `example.com`）
+2. 点击「查询」按钮
+3. 查看查询结果
+
+## 查询结果说明
+
+### 域名基本信息
+
+```
+域名: example.com
+注册商: GoDaddy.com, LLC
+注册商 IANA ID: 146
+注册商 WHOIS 服务器: whois.godaddy.com
+注册商 URL: https://www.godaddy.com
+```
+
+### 重要日期
+
+```
+创建时间: 1995-08-14T04:00:00Z
+更新时间: 2024-08-13T09:22:45Z
+到期时间: 2025-08-13T04:00:00Z
+```
+
+<Aside type="tip">
+  域名到期时间是最重要的信息之一。建议在域名到期前至少 30
+  天续费，避免域名过期被释放。
+</Aside>
+
+### 域名持有人信息
+
+根据 GDPR 和域名隐私保护政策，部分域名的持有人信息可能被隐藏或显示为：
+
+```
+注册人组织: Privacy Protected
+注册人国家: IS
+```
+
+### DNS 服务器
+
+```
+DNS 服务器:
+- ns1.example.com
+- ns2.example.com
+```
+
+### 域名状态
+
+常见的域名状态码：
+
+- **clientTransferProhibited**：禁止转移（保护域名不被恶意转移）
+- **clientUpdateProhibited**：禁止修改（保护域名信息不被修改）
+- **clientDeleteProhibited**：禁止删除（保护域名不被删除）
+- **clientRenewProhibited**：禁止续费
+- **clientHold**：域名暂停解析（通常因为违规或欠费）
+- **pendingDelete**：等待删除状态
+- **redemptionPeriod**：赎回期（域名过期后的宽限期）
+
+<Aside type="caution">
+  如果域名状态显示 `clientHold`、`pendingDelete` 或
+  `redemptionPeriod`，说明域名存在问题，需要尽快处理。
+</Aside>
+
+## 应用场景
+
+### 1. 检查域名所有权
+
+在购买二手域名或接手项目前，通过 WHOIS 查询验证：
+
+- 域名注册人信息
+- 域名注册时间（域名年龄）
+- 域名到期时间
+- 域名状态是否正常
+
+### 2. 监控域名到期时间
+
+定期查询关键域名的到期时间：
+
+- 避免域名过期被释放
+- 提前规划域名续费预算
+- 防止域名被恶意抢注
+
+### 3. 排查域名解析问题
+
+当网站无法访问时，通过 WHOIS 查询：
+
+- 确认 DNS 服务器配置是否正确
+- 检查域名状态是否被锁定
+- 查看域名是否已过期
+
+## 与证书管理的结合
+
+### 域名验证前的检查
+
+在申请 SSL 证书前，使用 WHOIS 查询：
+
+- 确认域名已注册且在有效期内
+- 检查 DNS 服务器配置
+- 验证域名状态正常
+
+## 隐私保护
+
+由于 GDPR 等隐私法规：
+
+- 许多域名的持有人信息被隐藏
+- 部分 TLD 完全不提供详细信息
+- 可能需要联系注册商获取更多信息
+
+<Aside type="note">
+  ICANN（互联网名称与数字地址分配机构）规定注册商必须提供 WHOIS
+  查询服务，但具体显示的信息内容因注册商和隐私政策而异。
+</Aside>
+
+## 最佳实践
+
+### 定期检查重要域名
+
+建议每季度检查一次：
+
+- 企业主域名
+- 品牌相关域名
+- 关键业务域名
+
+### 建立域名资产清单
+
+使用电子表格记录：
+
+- 所有拥有的域名
+- 注册商信息
+- 注册时间和到期时间
+- 用途和负责人
+- 续费状态
+
+### 设置到期提醒
+
+- 在域名到期前 90 天设置第一次提醒
+- 到期前 30 天设置第二次提醒
+- 到期前 7 天设置紧急提醒
+- 可以使用 anssl 的域名监控功能自动跟踪
+
+<Aside type="tip">将关键域名设置为自动续费，避免因遗忘续费而丢失域名。</Aside>

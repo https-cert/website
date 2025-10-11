@@ -1,11 +1,69 @@
 ---
 title: 域名监控
-description: A guide in my new Starlight docs site.
+description: 实时监控您的域名和证书状态，及时发现并处理潜在问题
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+import { Aside, Steps } from "@astrojs/starlight/components";
 
-## Further reading
+anssl 提供全面的域名和证书监控服务，帮助您实时掌握证书状态，避免因证书过期导致的服务中断。
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+## 监控功能概览
+
+### 证书到期监控
+
+- **实时状态检查**：每天自动检查证书有效期
+- **自动通知**：证书即将过期时自动发送通知
+- **仪表板展示**：直观展示所有证书的到期时间
+
+### 证书健康检查
+
+监控以下证书状态：
+
+- ✅ 证书是否有效
+- ✅ 证书链是否完整
+- ✅ 证书是否被吊销
+- ✅ 域名是否匹配
+- ✅ 签名算法是否安全
+- ✅ 证书配置是否正确
+
+## 添加监控
+
+<Steps>
+
+1. **进入监控页面**
+
+   访问 [域名监控](https://anssl.cn/console/monitor) 页面
+
+2. **添加监控域名**
+
+   点击「添加监控」按钮，填写：
+
+   - 域名或 IP 地址
+   - 端口（默认 443）
+
+3. **保存配置**
+
+   保存后系统会立即执行首次检查
+
+</Steps>
+
+## 监控仪表板
+
+仪表板提供全局视图，包括：
+
+### 统计概览
+
+- **证书总数**：管理的证书总数量
+- **即将过期**：30 天内即将过期的证书数
+- **已过期**：已经过期的证书数
+- **正常状态**：运行正常的证书数
+
+### 证书列表
+
+以表格形式展示所有监控的证书：
+
+| 域名        | 状态        | 到期时间   | 剩余天数 | 颁发机构      | 操作      |
+| ----------- | ----------- | ---------- | -------- | ------------- | --------- |
+| example.com | 🟢 正常     | 2024-12-31 | 45 天    | Let's Encrypt | 详情/续期 |
+| test.com    | 🟡 即将过期 | 2024-11-15 | 7 天     | ZeroSSL       | 详情/续期 |
+| old.com     | 🔴 已过期   | 2024-10-01 | -10 天   | Let's Encrypt | 续期      |

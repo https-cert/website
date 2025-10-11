@@ -1,14 +1,14 @@
 ---
 title: anssl
-description: anssl
+description: 专业的 SSL 证书生命周期管理平台，提供免费证书申请、自动续期、智能部署服务
 template: splash
 hero:
-  tagline: 为您的网站证书自动化维护
+  tagline: 让 SSL 证书管理变得简单而自动化
   image:
     file: ../../assets/logo.png
   actions:
-    - text: 了解更多
-      link: starteds/overview/
+    - text: 快速开始
+      link: /starteds/started
       icon: right-arrow
     - text: 前往控制台
       link: https://anssl.cn/console/dashboard
@@ -18,23 +18,52 @@ hero:
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-<CardGrid>
-  <Card title="试试这个" icon="open-book">
-    一些你想着重展示的有趣内容。
+## 为什么选择 anssl？
+
+anssl 是一个专业的 SSL/TLS 证书生命周期管理平台，帮助您轻松管理网站的 HTTPS 证书，从申请到部署，全程自动化。
+
+<CardGrid stagger>
+  <Card title="免费证书申请" icon="approve-check">
+    支持 Let's Encrypt、ZeroSSL、Google Trust Services 等主流 CA 机构，快速申请免费 DV 证书，无需信用卡，永久免费。
   </Card>
-  <Card title="其他功能" icon="information">
-    更多你想分享的信息。
-  </Card>
-  <Card title="其他功能" icon="information">
-    更多你想分享的信息。
-  </Card>
-  <Card title="试试这个" icon="open-book">
-    一些你想着重展示的有趣内容。
-  </Card>
-  <Card title="其他功能" icon="information">
-    更多你想分享的信息。
-  </Card>
-  <Card title="其他功能" icon="information">
-    更多你想分享的信息。
+
+{" "}
+
+<Card title="自动续期" icon="refresh">
+  证书到期前自动续期，无需人工干预。告别证书过期导致的服务中断，让您高枕无忧。
+</Card>
+
+{" "}
+
+<Card title="自动部署" icon="rocket">
+  一键部署到服务器，证书续期后自动更新到服务器。
+</Card>
+
+{" "}
+
+<Card title="域名监控" icon="magnifier">
+  实时监控证书状态，到期前多渠道提醒。支持监控任何域名的证书，不限于在 anssl
+  申请的证书。
+</Card>
+
+{" "}
+
+<Card title="批量管理" icon="list-format">
+  统一管理所有域名的证书，支持批量申请、续期、部署。提高运维效率，避免证书遗漏。
+</Card>
+
+  <Card title="安全可靠" icon="shield">
+    私钥在浏览器本地生成，敏感信息加密存储。基于 ACME v2 协议标准实现，兼容业界最佳实践。
   </Card>
 </CardGrid>
+
+## 立即开始
+
+<Card title="准备好了吗？" icon="rocket">
+  查看[快速开始指南](/starteds/started)，在 5 分钟内完成首次证书申请。
+
+或者访问[控制台](https://anssl.cn/console/dashboard)直接开始使用。
+
+对 SSL 证书不太了解？先阅读[证书基础知识](/starteds/certificate-basics)。
+
+</Card>

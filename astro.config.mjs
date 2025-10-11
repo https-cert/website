@@ -48,12 +48,6 @@ export default defineConfig({
 						{ label: '常见问题', slug: 'faq/faq' },
 					],
 				},
-				{
-					label: '隐私政策',
-					items: [
-						{ label: '隐私政策', slug: 'privacy/privacy' },
-					],
-				},
 			],
 		}),
 	],
