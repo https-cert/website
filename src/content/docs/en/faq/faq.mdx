@@ -1,0 +1,146 @@
+---
+title: Frequently asked questions
+description: Answers to common questions about requesting, validating, deploying, and troubleshooting certificates with anssl.
+sidebar:
+  label: Common Questions
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+This page collects frequent questions from teams adopting anssl. If you need deeper assistance, reach out to support at any time.
+
+## Essentials
+
+### Is anssl free?
+
+Yes. Core features are free forever, including:
+
+- Unlimited certificate issuance  
+- Automated renewals  
+- Domain monitoring  
+- Basic automated deployment
+
+anssl integrates with free DV CAs such as Let's Encrypt, ZeroSSL, and Google Trust Services.
+
+### How is anssl different from other tools?
+
+**Compared to Certbot**
+
+- Visual web console—no command line required.  
+- Centralized management for multiple servers.  
+- Built-in monitoring and renewal alerts.  
+- Automated deployment across diverse platforms.
+
+**Compared to issuing directly via a CA**
+
+- Higher automation with scheduled renewals.  
+- Unified inventory for many domains.  
+- Batch operations for large fleets.  
+- A friendlier workflow for teams.
+
+## Issuing certificates
+
+### How long does issuance take?
+
+Most certificates issue within 1–5 minutes. Timing depends on:
+
+- Validation method (DNS requires propagation).  
+- The CA’s processing queue.  
+- Your network latency.
+
+### How many certificates can I request?
+
+There’s no platform-level limit. Issue as many certificates as you need.
+
+### What should I do if issuance fails?
+
+Common causes:
+
+1. **Validation failed** — Confirm DNS or HTTP challenge data matches the instructions.  
+2. **DNS propagation delay** — Wait 5–30 minutes and retry.  
+3. **Domain unreachable** — Ensure the hostname resolves correctly.  
+4. **CA rate limits** — Wait for the cooling period or switch to another CA.  
+5. **Invalid domain** — Verify the hostname format is supported.
+
+See the certificate detail page for full error logs.
+
+## Domain validation
+
+### Which validation method should I use?
+
+**DNS validation (recommended)**
+
+- ✅ Works for every certificate type  
+- ✅ Supports wildcard certificates  
+- ✅ Requires no open HTTP port  
+- ❌ Depends on DNS propagation time
+
+**HTTP validation**
+
+- ✅ Faster verification  
+- ✅ Simple for existing web servers  
+- ❌ No wildcard support  
+- ❌ Requires port 80 availability
+
+## Renewals
+
+### When does automatic renewal run?
+
+With auto-renew enabled, anssl starts renewal attempts 20 days before expiry and retries daily until success. If automated deployment is configured, new certificates roll out immediately.
+
+### What if auto-renew fails?
+
+You’ll receive email notifications when renewals fail. Typical issues include:
+
+1. **Validation errors** — Ensure DNS/HTTP challenges still exist.  
+2. **Expired domains** — Renew the domain registration.  
+3. **CA outages** — Retry with an alternate CA if available.  
+4. **Rate limits** — Pause and retry after the limit resets.
+
+Check the renewal history and error logs on the certificate detail page, or trigger a manual renewal once the issue is resolved.
+
+### Can I renew manually?
+
+Yes. Click **Renew now** on the certificate detail page to start the process immediately. Avoid doing this excessively to prevent CA rate limits.
+
+### Do I need to redeploy after renewal?
+
+- **Automatic deployment enabled** — No action required. anssl handles the rollout.  
+- **Manual deployment** — Download the new files and update your servers.
+
+We recommend enabling automated deployment to close the loop.
+
+## Technical details
+
+### Does anssl support ACME v2?
+
+Yes. anssl implements the ACME v2 protocol and works with any compatible CA.
+
+### Is there an API?
+
+Yes. The REST API lets you:
+
+- Request certificates  
+- Check status  
+- Download issued files  
+- Manage deployment targets  
+- Configure domain monitoring
+
+Visit **Developer Center** in the console for full documentation.
+
+## Additional topics
+
+### Can I use these certificates on internal networks?
+
+Public CAs such as Let's Encrypt issue certificates only for publicly resolvable domains. For internal use:
+
+- **Public domain with internal resolution** — Works when you can complete DNS validation.  
+- **Private-only domains** — Use a private CA or self-signed certificates.
+
+### Can I request a certificate for an IP address?
+
+Free CAs do not currently issue certificates for bare IP addresses.
+
+### Can I move certificates to other platforms?
+
+Absolutely. Certificates are issued in standard formats and work on any TLS-capable platform—you’re never locked in.

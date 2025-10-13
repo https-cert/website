@@ -1,0 +1,73 @@
+---
+title: Certificate basics
+description: Understand the fundamentals of SSL certificates, validation levels, and cryptographic algorithms.
+sidebar:
+  label: Certificate Basics
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## 1. What is an SSL certificate?
+
+An SSL (Secure Sockets Layer) certificate is a digital credential that enables encrypted communication between a client and a server. It safeguards data in transit, ensuring confidentiality and integrity so information cannot be intercepted or tampered with.
+
+### Why SSL certificates matter
+
+- Encrypt traffic to protect user privacy.  
+- Prove website authenticity and block phishing attempts.  
+- Improve search-engine ranking signals.  
+- Build customer trust with visible security indicators.  
+- Meet regulatory and compliance requirements.
+
+### Validation levels
+
+- **DV (Domain Validation)** – Confirms domain ownership; fastest issuance.  
+- **OV (Organization Validation)** – Verifies registered business details for extra assurance.  
+- **EV (Extended Validation)** – Highest scrutiny; surfaces enhanced identity signals in some browsers.
+
+### Validity periods
+
+- Let's Encrypt: 90 days  
+- ZeroSSL: 90 days  
+- Commercial CAs: typically 1–3 years
+
+<Aside type="caution" title="Important reminder">
+  Expired certificates trigger browser security warnings that damage user trust and SEO performance. Enable monitoring and automatic renewals in anssl so certificates renew before the deadline.
+</Aside>
+
+## 2. Signing algorithm essentials
+
+The signing algorithm defines how a certificate’s authenticity is verified. Different algorithms balance security, performance, and compatibility in different ways.
+
+### RSA
+
+- **RSA-2048** – Widely supported with strong security.  
+- **RSA-3072** – Higher assurance for stricter policies.  
+- **RSA-4096** – Maximum strength, but heavier CPU usage.
+
+### ECDSA (ECC)
+
+- **P-256** – Comparable to RSA-3072 with better performance.  
+- **P-384** – Comparable to RSA-7680 for higher security margins.  
+- **P-521** – Equivalent strength to RSA-15360, rarely needed outside specialized environments.
+
+### Comparing the algorithms
+
+- **RSA**
+  - Pros: Universal compatibility across clients and devices.
+  - Cons: Longer keys and signatures increase CPU cost.
+- **ECDSA**
+  - Pros: Short keys, strong security, and excellent performance.
+  - Cons: Older clients may lack full support.
+
+### Selection guidance
+
+- Use **ECC P-256** for most modern workloads.  
+- Choose **ECC P-384** or **RSA-3072** for higher-assurance environments.  
+- Stick with **RSA-2048** when maximum compatibility is mandatory.  
+- Pick ECDSA when low latency and resource efficiency are priorities.  
+- anssl defaults to ECC P-256 for new requests.
+
+<Aside type="caution" title="Algorithm safety note">
+  Legacy algorithms such as RSA-1024 or MD5-signed certificates are no longer secure. anssl excludes unsafe options so all new certificates meet modern security expectations.
+</Aside>

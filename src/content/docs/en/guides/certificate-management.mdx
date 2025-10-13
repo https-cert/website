@@ -1,0 +1,120 @@
+---
+title: Certificate management
+description: Learn how to request, renew, download, and revoke SSL/TLS certificates in anssl.
+sidebar:
+  label: Certificate Management
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+anssl covers every stage of the certificate lifecycle—from issuance and renewal to revocation—so you can manage everything in one console.
+
+## Issue certificates
+
+### Supported certificate types
+
+- **Single-domain** — Protect one hostname (for example `example.com`).  
+- **Multi-domain (SAN)** — Secure several distinct hostnames.  
+- **Wildcard** — Cover a root domain and all subdomains (for example `*.example.com`).
+
+### Available certificate authorities
+
+- **Let's Encrypt** — Free, automated DV certificates.  
+- **ZeroSSL** — Free 90-day certificates with ACME support.  
+- **Google Trust Services** — Fast issuance operated by Google.
+
+### Issuance workflow
+
+<Steps>
+
+1. **Log in to the console**
+
+   Visit the [anssl dashboard](https://anssl.cn/console/dashboard) and sign in.
+
+2. **Open Certificates**
+
+   Choose **Certificates** in the left navigation.
+
+3. **Create a certificate**
+
+   Click **New certificate** and provide:
+
+   - Type (single-domain / multi-domain / wildcard)  
+   - Domain list  
+   - Signing algorithm (ECC P-256 recommended)  
+   - Preferred CA
+
+4. **Validate domains**
+
+   Pick the validation method that fits your environment:
+
+   - **DNS** — Add the requested TXT record to your DNS zone.  
+   - **HTTP** — (coming soon) Upload the provided token to your site root.
+
+5. **Receive the certificate**
+
+   After successful validation, the CA issues the certificate—usually within a few minutes.
+
+</Steps>
+
+<Aside type="tip">
+  ECC P-256 offers RSA-3072 levels of security with smaller keys and faster handshakes, so it’s our default recommendation.
+</Aside>
+
+## Renew certificates
+
+### Automatic renewals
+
+anssl can renew certificates automatically before they expire:
+
+- Renewal attempts begin 20 days before expiry.  
+- The platform retries daily until success.  
+- Failures trigger email and webhook notifications.  
+- Customize the renewal window to match your operational policies.
+
+### Manual renewals
+
+To renew manually:
+
+1. Open the Certificates page.  
+2. Locate the certificate to renew.  
+3. Click **Renew**.  
+4. anssl repeats the validation and issuance steps automatically.
+
+## Download certificates
+
+When issuance succeeds you can download the assets:
+
+1. Locate the certificate in the inventory.  
+2. Click **Download** to retrieve the bundle (certificate, key, and intermediates if applicable).
+
+## Revoke certificates
+
+Revoke a certificate immediately if the private key is compromised or the certificate is no longer required:
+
+1. Open the Certificates page.  
+2. Select the relevant certificate.  
+3. Click **Revoke**.  
+4. Provide the reason for audit tracking.  
+5. anssl submits the revocation request to the issuing CA.
+
+<Aside type="danger">
+  Revocation is permanent. After revoking, request a new certificate to restore service.
+</Aside>
+
+## Troubleshooting
+
+### Issuance failed—what next?
+
+Common causes include:
+
+- DNS records missing or not yet propagated.  
+- HTTP validation file inaccessible.  
+- Incorrect domain configuration.  
+- Hitting CA rate limits.
+
+Fixes:
+
+1. Confirm the validation data matches the instructions.  
+2. Wait for DNS propagation (typically 10 minutes to 2 hours).  
+3. Review the error details in the certificate activity log for guidance.

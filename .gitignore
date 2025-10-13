@@ -24,3 +24,4 @@ release
 .vscode
 pnpm-lock.yaml
 CLAUDE.md
+AGENTS.md

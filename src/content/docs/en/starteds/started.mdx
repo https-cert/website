@@ -1,0 +1,324 @@
+---
+title: Quickstart
+description: Get up and running with anssl in five minutes and issue your first free SSL certificate.
+sidebar:
+  label: Quickstart
+---
+
+import { Aside, Steps, Card, CardGrid } from "@astrojs/starlight/components";
+
+Welcome to anssl! This guide walks you through creating your account and issuing your first free SSL certificate in about five minutes.
+
+## Prerequisites
+
+Before you begin, confirm you have:
+
+- ✅ A valid email address
+- ✅ A registered domain name
+- ✅ DNS management permissions for the domain (required for ownership validation)
+
+<Aside type="tip">
+  Need a domain? Register one through your preferred provider (for example, Alibaba Cloud, Tencent Cloud, GoDaddy).
+</Aside>
+
+## Step 1: Create an account
+
+<Steps>
+
+1. **Open the registration page**
+
+   Visit the [anssl registration form](https://anssl.cn/register).
+
+2. **Enter your details**
+
+   - Email address  
+   - Password (minimum 8 characters with letters and numbers)  
+   - Password confirmation
+
+3. **Submit the form**
+
+   Click **Register**. A verification email arrives within a few seconds.
+
+4. **Verify your email**
+
+   Open the email and follow the verification link to activate your account.
+
+</Steps>
+
+## Step 2: Sign in to the console
+
+After verification:
+
+1. Navigate to the [login page](https://anssl.cn/login).  
+2. Enter the email and password you just created.  
+3. Click **Log in** to reach the dashboard.
+
+First-time users see a welcome screen with shortcuts to common tasks.
+
+## Step 3: Request a free certificate
+
+<Steps>
+
+1. **Open Certificate Management**
+
+   In the left navigation, choose **Certificates** to view your inventory.
+
+2. **Start a new request**
+
+   Click **New certificate** in the top-right corner.
+
+3. **Pick a certificate type**
+
+   Choose the option that fits your scenario:
+
+   - **Single-domain**: Protects one hostname (for example `example.com`).  
+   - **Wildcard**: Covers a root domain and all subdomains (for example `*.example.com`).  
+   - **Multi-domain (SAN)**: Secures multiple unique hostnames under one certificate.
+
+4. **Enter domain details**
+
+   - Provide the primary domain you want to secure.  
+   - For wildcard certificates, use the `*.domain.com` format.
+
+5. **Select a certificate authority**
+
+   We recommend:
+
+   - **Let's Encrypt** – Well-known, fast issuance.  
+   - **ZeroSSL** – Free alternative for redundancy.  
+   - **Google Trust Services** – Fast issuance backed by Google.
+
+6. **Pick a signing algorithm**
+
+   - Use **ECC P-256** for the best blend of performance and security.  
+   - If you must support legacy platforms, choose **RSA-2048**.
+
+7. **Choose a validation method**
+
+   anssl supports multiple validation flows:
+
+   **DNS verification** (recommended):
+
+   - Add the requested TXT record to your DNS provider.  
+   - Works for every certificate type, including wildcards.
+
+   **HTTP verification** (coming soon):
+
+   - Upload the provided challenge file to your site root.  
+   - Ideal for domains already serving content.  
+   - Not supported for wildcard certificates.
+
+8. **Complete domain validation**
+
+9. **Wait for issuance**
+
+   Once validation succeeds, the CA issues the certificate—normally within one to five minutes.
+
+10. **Download your files**
+
+    When the status shows **Issued**, click **Download** to retrieve the certificate bundle.
+
+</Steps>
+
+<Aside type="tip">
+  DNS propagation can take 5–30 minutes. If validation fails, wait a bit and try again after confirming the record resolves.
+</Aside>
+
+## Step 4: Deploy the certificate
+
+### Option A: Manual deployment
+
+After downloading the certificate files, deploy them based on your server stack.
+
+#### Nginx
+
+1. Upload the certificate and key:
+
+```bash
+scp example.com.pem root@your-server:/etc/nginx/ssl/
+scp example.com.key root@your-server:/etc/nginx/ssl/
+```
+
+2. Update the virtual host configuration:
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    ssl_certificate /etc/nginx/ssl/example.com.pem;
+    ssl_certificate_key /etc/nginx/ssl/example.com.key;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # additional directives…
+}
+```
+
+3. Test and reload Nginx:
+
+```bash
+nginx -t
+nginx -s reload
+```
+
+#### Apache
+
+1. Upload the certificate and private key:
+
+```bash
+scp example.com.crt root@your-server:/etc/ssl/certs/
+scp example.com.key root@your-server:/etc/ssl/private/
+```
+
+2. Edit the virtual host:
+
+```apache
+<VirtualHost *:443>
+    ServerName example.com
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/example.com.crt
+    SSLCertificateKeyFile /etc/ssl/private/example.com.key
+
+    # additional directives…
+</VirtualHost>
+```
+
+3. Restart Apache:
+
+```bash
+systemctl restart apache2
+```
+
+### Option B: Automatic deployment
+
+anssl can deploy certificates for you on a schedule:
+
+1. Open **Automatic Deployment** in the console.  
+2. Select the certificate you just issued.  
+3. Configure deployment targets (server credentials or cloud provider tokens).  
+4. Run a deployment test to confirm connectivity.  
+5. Enable automatic deployment to sync changes after each renewal.
+
+See the [deployment guide](/en/guides/deploy) for detailed configuration steps.
+
+## Step 5: Verify the certificate
+
+Confirm that the certificate is active and trusted:
+
+1. **Check in a browser**
+
+   Visit `https://yourdomain.com` and confirm:
+
+   - The address bar shows a lock icon 🔒.  
+   - No security warnings appear.  
+   - The certificate details match your domain.
+
+2. **Run an online scan**
+
+   Use [SSL Labs](https://www.ssllabs.com/ssltest/):
+
+   - Visit the test page.  
+   - Enter your domain name.  
+   - Review the grade and remediation tips.
+
+3. **Validate via CLI**
+
+   ```bash
+   openssl s_client -connect example.com:443 -servername example.com
+   ```
+
+<Aside type="tip">
+  A `Verify return code: 0 (ok)` message indicates the certificate chain is valid.
+</Aside>
+
+## Next steps
+
+Great work—your first certificate is live! Continue scaling your setup with the resources below.
+
+<CardGrid>
+  <Card title="Domain monitoring" icon="magnifier">
+    Configure expiry monitoring so you receive renewal reminders in advance.
+
+    [Learn more →](/en/guides/monitor)
+
+  </Card>
+
+  <Card title="Automated deployment" icon="rocket">
+    Keep servers in sync after renewals with automated rollout.
+
+    [Learn more →](/en/guides/deploy)
+
+  </Card>
+
+  <Card title="Productivity tools" icon="setting">
+    Use built-in helpers such as WHOIS lookups and CSR generation.
+
+    [Learn more →](/en/guides/tools/whois)
+
+  </Card>
+</CardGrid>
+
+## Frequently asked questions
+
+### What if domain validation fails?
+
+**DNS validation**:
+
+- Double-check the requested TXT or CNAME record value.  
+- Allow 5–30 minutes for propagation.  
+- Use `nslookup` or `dig` to confirm the record is visible publicly.
+
+**HTTP validation**:
+
+- Ensure the challenge file is publicly accessible over HTTP.  
+- Review firewall/CDN rules that might block the request.  
+- Temporarily disable forced HTTP→HTTPS redirects if necessary.
+
+### Why does the browser still show “Not Secure”?
+
+Potential causes:
+
+- Incorrect certificate path in your server configuration.  
+- Mismatch between the private key and certificate.  
+- Missing intermediate certificates.  
+- Browser cache holding an earlier state.
+
+Fixes:
+
+1. Review the server configuration for path typos.  
+2. Run the SSL Labs scan to identify chain issues.  
+3. Clear the browser cache and reload.
+
+### How do I request a wildcard certificate?
+
+Wildcard certificates require DNS validation:
+
+1. Enter the domain as `*.example.com`.  
+2. Choose the DNS validation option.  
+3. Add the provided TXT/CNAME record.  
+4. Complete validation to receive the certificate.
+
+### How do free and paid certificates differ?
+
+| Feature          | Free certificates | Paid certificates |
+| ---------------- | ----------------- | ----------------- |
+| Encryption level | Same              | Same              |
+| Browser trust    | Same              | Same              |
+| Validity period  | 90 days           | 1–3 years         |
+| Validation types | DV only           | DV / OV / EV      |
+| Support          | Community         | Dedicated support |
+| Warranty         | None              | Included on many plans |
+
+Free DV certificates cover most personal and SMB use cases. Enterprises with compliance requirements often select OV or EV offerings from commercial CAs.
+
+## Need help?
+
+If you run into trouble:
+
+- 📖 Review the [FAQ](/en/faq/faq).  
+- 💬 Join the community discussion group.  
+- 📧 Email support at contact@anssl.cn.  
+- 🐛 Report issues on [GitHub](https://github.com/https-cert/website/issues).

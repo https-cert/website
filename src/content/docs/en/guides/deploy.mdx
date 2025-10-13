@@ -1,0 +1,50 @@
+---
+title: Automated deployment
+description: Push renewed certificates to your servers and cloud environments without manual work.
+sidebar:
+  label: Automated Deployment
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+anssl automates certificate rollouts so freshly issued files reach your infrastructure as soon as they’re available. Use the deployment agent for traditional servers or integrate with built-in cloud connectors.
+
+## Configure automated deployment
+
+<Steps>
+
+1. **Open the deployment console**
+
+   Visit the [Automatic deployment](https://anssl.cn/console/deploy) page in anssl.
+
+2. **Install the deployment CLI**
+
+   Download the agent for your platform and follow the installation instructions provided on the page.
+
+3. **Select the certificate**
+
+   Choose the certificate that should be synchronized to your target environment.
+
+4. **Configure targets**
+
+   Add one or more destinations (SSH servers, load balancers, or cloud providers) and specify deployment commands or API credentials.
+
+5. **Run a test deployment**
+
+   Trigger a dry run to confirm connectivity and permissions before turning on automation.
+
+6. **Enable continuous deployment**
+
+   Activate the schedule so anssl pushes renewed certificates immediately after issuance.
+
+</Steps>
+
+<Aside type="tip">
+  Combine automated deployment with monitoring alerts to ensure every critical endpoint receives updates before certificates expire.
+</Aside>
+
+## Troubleshooting
+
+- Review the deployment history timeline to see logs from recent syncs.  
+- Ensure the deployment CLI has permission to write to your certificate paths.  
+- If a step fails, rerun the test deployment after addressing the reported error.

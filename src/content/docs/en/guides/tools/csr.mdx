@@ -1,0 +1,276 @@
+---
+title: CSR generator
+description: Create certificate signing requests (CSRs) and private keys for SSL issuance.
+sidebar:
+  label: CSR Generator
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+A certificate signing request (CSR) packages your public key, domain information, and organization data so a certificate authority can issue an SSL certificate. anssl’s CSR tool helps you create standards-compliant CSRs together with matching private keys in just a few clicks.
+
+## What is a CSR?
+
+A CSR is a structured text file containing:
+
+- **Domain details** — The hostname or wildcard you plan to secure.
+- **Organization fields** — Company name, department, and location information.
+- **Public key** — The public half of the key pair that will anchor your certificate.
+- **Signing algorithm** — RSA or ECC, which determines key length and compatibility.
+
+You submit the CSR to a CA; after validation, the CA signs it and returns the certificate.
+
+<Aside type="note">
+  Creating a CSR also generates a private key. Store it securely and never share it with anyone.
+</Aside>
+
+## Use the anssl CSR tool
+
+<Steps>
+
+1. **Open the tool**  
+   Visit the [CSR generator](https://anssl.cn/console/tools/csr).
+
+2. **Enter domain information**  
+   - **Common Name (CN)** — Primary domain such as `example.com` or `*.example.com`.  
+   - **Subject Alternative Names (SANs)** — Optional list of additional hostnames.
+
+3. **Provide organization details**  
+   - **Organization (O)** — Legal entity name.  
+   - **Organizational Unit (OU)** — Department (optional).  
+   - **Country (C)** — ISO 3166-1 alpha-2 code (`CN`, `US`, etc.).  
+   - **State/Province (ST)** — Full region name.  
+   - **Locality (L)** — City name.
+
+4. **Choose a signing algorithm**  
+   - **RSA-2048 / 3072 / 4096** — Maximizes compatibility at increasing security levels.  
+   - **ECC P-256 / P-384** — Recommended for modern workloads thanks to smaller keys and faster handshakes.
+
+5. **Generate**  
+   Click **Generate** to produce the CSR (submit to the CA) and a matching private key.
+
+6. **Download immediately**  
+   Save both files locally. The private key is shown only once.
+
+</Steps>
+
+<Aside type="danger">
+  **Important:** If you misplace the private key, you must generate a new CSR and reissue the certificate.
+</Aside>
+
+## Field reference
+
+### Common Name (CN)
+
+Defines the primary domain covered by the certificate:
+
+- **Single domain** — `example.com` or `www.example.com`.  
+- **Wildcard** — `*.example.com` to include every subdomain.
+
+<Aside type="caution">
+  CN holds only one value. Use SAN entries to cover additional hostnames.
+</Aside>
+
+### Subject Alternative Names (SAN)
+
+Protect multiple domains by adding one entry per line:
+
+```
+example.com
+www.example.com
+blog.example.com
+shop.example.com
+```
+
+### Organization details
+
+Provide accurate information for OV/EV certificates:
+
+- **Organization (O)** — Legal business name.  
+- **Organizational Unit (OU)** — Department, e.g., “IT Department” (optional).  
+- **Country (C)** — Two-letter country code.  
+- **State/Province (ST)** — Full region name.  
+- **Locality (L)** — Full city name.
+
+Example:
+
+```
+O = Example Inc.
+OU = IT Department
+C = CN
+ST = Beijing
+L = Beijing
+```
+
+<Aside type="tip">
+  DV certificates do not validate organization data, but OV/EV issuances will, so accuracy matters.
+</Aside>
+
+## Selecting an algorithm
+
+### RSA
+
+- **Pros:** Universal compatibility; well-understood by every browser and appliance.  
+- **Cons:** Larger keys (2048–4096 bits) generate more CPU and bandwidth overhead.
+
+Use RSA when legacy device support is a strict requirement.
+
+### ECC (recommended)
+
+- **Pros:** Short keys with equivalent security, faster handshakes, smaller certificates.  
+- **Cons:** A small number of legacy systems may lack ECC support.
+
+Choose ECC for modern web, mobile, and high-throughput workloads.
+
+### Comparison
+
+| Algorithm   | Key length | Equivalent security | Performance | Compatibility |
+| ----------- | ---------- | ------------------- | ----------- | ------------- |
+| RSA-2048    | 2048 bits  | Baseline            | ★★★☆☆      | ★★★★★         |
+| RSA-3072    | 3072 bits  | High                | ★★☆☆☆      | ★★★★★         |
+| RSA-4096    | 4096 bits  | Very high           | ★☆☆☆☆      | ★★★★★         |
+| ECC P-256   | 256 bits   | ≈ RSA-3072          | ★★★★★      | ★★★★☆         |
+| ECC P-384   | 384 bits   | ≈ RSA-7680          | ★★★★☆      | ★★★★☆         |
+
+<Aside type="tip">
+  ECC P-256 offers the best balance of performance and security for most deployments.
+</Aside>
+
+## Generated files
+
+### CSR example
+
+```
+-----BEGIN CERTIFICATE REQUEST-----
+MIICvDCCAaQCAQAwdzELMAkGA1UEBhMCQ04xEDAOBgNVBAgMB0JlaWppbmcxEDAO
+BgNVBAcMB0JlaWppbmcxFDASBgNVBAoMC0V4YW1wbGUgSW5jMRYwFAYDVQQLDA1J
+VCBEZXBhcnRtZW50MRYwFAYDVQQDDA1leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcN
+...
+-----END CERTIFICATE REQUEST-----
+```
+
+### Private key example
+
+```
+-----BEGIN PRIVATE KEY-----
+MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDU7VR5K3Y0K5K3
+hZRHmNb2M8F2qKLHqLXqAGYWqLXqAGYWqLXqAGYWqLXqAGYWqLXqAGYWqLXqAGYW
+...
+-----END PRIVATE KEY-----
+```
+
+<Aside type="danger">
+  Private keys are sensitive—never commit them to Git, send them over email, or store them on unsecured devices.
+</Aside>
+
+## Verify your CSR
+
+Run the built-in validator or use OpenSSL:
+
+```bash
+openssl req -text -noout -verify -in example.csr
+```
+
+`verify OK` indicates the CSR structure is valid. Review the output to confirm:
+
+- ✅ Domains and SANs are correct.  
+- ✅ Organization data matches your records.  
+- ✅ The signing algorithm is what you expect.  
+- ✅ The public key length is correct.
+
+## Use the CSR for issuance
+
+### Option A: anssl-managed issuance
+
+When you request certificates through anssl, the platform can handle CSR creation automatically—you don’t need to supply your own file.
+
+### Option B: External CAs
+
+For third-party issuances:
+
+1. Paste the CSR into the CA’s request form.  
+2. Complete the required domain validation steps.  
+3. Download the issued certificate.  
+4. Deploy the certificate alongside the saved private key.
+
+<Aside type="caution">
+  Always pair certificates with the correct private key. A mismatch will break the TLS handshake.
+</Aside>
+
+## Generate a CSR with OpenSSL
+
+Prefer the CLI? These snippets show how to recreate the same results manually.
+
+### RSA example
+
+```bash
+# Generate private key and CSR in one step
+openssl req -new -newkey rsa:2048 -nodes \
+  -keyout example.com.key \
+  -out example.com.csr \
+  -subj "/C=CN/ST=Beijing/L=Beijing/O=Example Inc/CN=example.com"
+```
+
+### ECC example
+
+```bash
+# Generate ECC private key
+openssl ecparam -genkey -name prime256v1 -out example.com.key
+
+# Create CSR
+openssl req -new -key example.com.key \
+  -out example.com.csr \
+  -subj "/C=CN/ST=Beijing/L=Beijing/O=Example Inc/CN=example.com"
+```
+
+### Add SAN entries
+
+Create `san.cnf`:
+
+```ini
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+
+[req_distinguished_name]
+countryName = Country Name
+stateOrProvinceName = State or Province Name
+localityName = Locality Name
+organizationName = Organization Name
+commonName = Common Name
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = example.com
+DNS.2 = www.example.com
+DNS.3 = blog.example.com
+```
+
+Generate the CSR with SANs:
+
+```bash
+openssl req -new -key example.com.key \
+  -out example.com.csr \
+  -config san.cnf \
+  -subj "/C=CN/ST=Beijing/L=Beijing/O=Example Inc/CN=example.com"
+```
+
+## Frequently asked questions
+
+### What if I lose the CSR or private key?
+
+If the private key is lost, the existing certificate is unusable. Generate a new CSR/key pair and reissue the certificate.
+
+<Aside type="tip">
+  Encrypt private keys and back them up in a secure vault or password manager.
+</Aside>
+
+### Can I reuse the same CSR multiple times?
+
+It’s technically possible but not recommended. Generate fresh CSRs and keys for each issuance to reduce risk and simplify audits.
+
+### Can I edit organization fields after generating the CSR?
+
+No. If you need different details, create a new CSR. (DV certificates ignore organization data, but OV/EV requests require accuracy.)

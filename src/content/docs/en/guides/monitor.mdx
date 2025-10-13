@@ -1,0 +1,71 @@
+---
+title: Domain monitoring
+description: Monitor certificate health in real time so you can respond before issues impact users.
+sidebar:
+  label: Domain Monitoring
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+anssl keeps an eye on every domain you manage. Automated checks warn you about expiring certificates, broken chains, or misconfigurations before they cause outages.
+
+## Monitoring at a glance
+
+### Expiry tracking
+
+- **Daily checks** — Verify validity windows once per day.  
+- **Smart notifications** — Send alerts when certificates approach expiry.  
+- **Visual timeline** — See remaining days for every certificate in one dashboard.
+
+### Health auditing
+
+Each run validates critical health signals:
+
+- ✅ Certificate status (valid/expired)  
+- ✅ Chain completeness and intermediates  
+- ✅ Revocation status  
+- ✅ Domain name mapping  
+- ✅ Supported signing algorithms  
+- ✅ TLS configuration best practices
+
+## Add a domain monitor
+
+<Steps>
+
+1. **Open the monitoring page**
+
+   Navigate to [Domain monitoring](https://anssl.cn/console/monitor).
+
+2. **Create a monitor**
+
+   Click **Add monitor** and provide:
+
+   - Domain or IP address  
+   - Port (defaults to 443)
+
+3. **Save**
+
+   anssl runs the first check immediately and schedules recurring jobs automatically.
+
+</Steps>
+
+## Monitoring dashboard
+
+The dashboard surfaces high-level insights and detailed findings.
+
+### Key metrics
+
+- **Total certificates** — Count of monitored hosts.  
+- **Expiring soon** — Certificates with fewer than 30 days remaining.  
+- **Expired** — Certificates that already lapsed.  
+- **Healthy** — Certificates passing every check.
+
+### Certificate table
+
+Each tracked domain appears in a sortable table:
+
+| Domain       | Status        | Expires      | Days left | Issuer          | Actions     |
+| ------------ | ------------- | ------------ | --------- | --------------- | ----------- |
+| example.com  | 🟢 Healthy     | 2024-12-31   | 45        | Let's Encrypt   | Details/Renew |
+| staging.com  | 🟡 Expiring soon | 2024-11-15 | 7         | ZeroSSL         | Details/Renew |
+| legacy.site  | 🔴 Expired     | 2024-10-01   | -10       | Google Trust Services | Renew |
