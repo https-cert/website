@@ -1,0 +1,143 @@
+---
+title: CA 根证书使用说明
+description: 如何下载、安装和使用自签名 CA 根证书
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+本文档介绍如何下载和安装 CA 根证书，使您的系统或浏览器信任由该 CA 签发的证书。
+
+## 什么是 CA 根证书？
+
+CA（Certificate Authority）根证书是证书信任链的根节点。当您创建一个私有 CA 并用它签发服务器证书时，客户端需要信任该 CA 根证书，才能自动信任由它签发的所有证书。
+
+<Aside type="tip">
+适用场景：内部开发环境、测试环境、企业内网服务等不需要公网信任的场景。
+</Aside>
+
+## 下载 CA 根证书
+
+<Steps>
+1. 进入 **控制台 → 本地证书 → CA 管理**
+2. 找到需要下载的 CA，点击 **下载** 按钮
+3. 在弹出的对话框中，点击 **下载** 保存 `xxx-ca.crt` 文件
+</Steps>
+
+## 安装 CA 根证书
+
+<Tabs>
+  <TabItem label="macOS">
+    ### 方法一：钥匙串访问（推荐）
+
+    <Steps>
+    1. 双击下载的 `.crt` 文件
+    2. 在弹出的"钥匙串访问"中，选择添加到 **系统** 钥匙串
+    3. 找到刚添加的证书，双击打开
+    4. 展开 **信任** 部分
+    5. 将"使用此证书时"改为 **始终信任**
+    6. 关闭窗口，输入密码确认
+    </Steps>
+
+    ### 方法二：命令行
+
+    ```bash
+    sudo security add-trusted-cert -d -r trustRoot \
+      -k /Library/Keychains/System.keychain \
+      ~/Downloads/xxx-ca.crt
+    ```
+  </TabItem>
+
+  <TabItem label="Windows">
+    ### 方法一：图形界面
+
+    <Steps>
+    1. 双击下载的 `.crt` 文件
+    2. 点击 **安装证书**
+    3. 选择 **本地计算机**，点击下一步
+    4. 选择 **将所有证书都放入下列存储**
+    5. 点击 **浏览**，选择 **受信任的根证书颁发机构**
+    6. 完成安装
+    </Steps>
+
+    ### 方法二：命令行（管理员权限）
+
+    ```powershell
+    certutil -addstore -f "ROOT" C:\path\to\xxx-ca.crt
+    ```
+  </TabItem>
+
+  <TabItem label="Linux">
+    ### Ubuntu/Debian
+
+    ```bash
+    # 复制证书到信任目录
+    sudo cp xxx-ca.crt /usr/local/share/ca-certificates/
+
+    # 更新证书信任库
+    sudo update-ca-certificates
+    ```
+
+    ### CentOS/RHEL/Fedora
+
+    ```bash
+    # 复制证书
+    sudo cp xxx-ca.crt /etc/pki/ca-trust/source/anchors/
+
+    # 更新信任库
+    sudo update-ca-trust
+    ```
+  </TabItem>
+
+  <TabItem label="浏览器">
+    ### Chrome
+
+    Chrome 使用系统证书库，安装到系统后自动生效。
+
+    ### Firefox
+
+    Firefox 使用独立证书库，需要单独导入：
+
+    <Steps>
+    1. 打开 **设置 → 隐私与安全**
+    2. 滚动到 **证书** 部分，点击 **查看证书**
+    3. 选择 **证书颁发机构** 标签页
+    4. 点击 **导入**，选择 `.crt` 文件
+    5. 勾选 **信任此 CA 以标识网站**
+    6. 点击确定
+    </Steps>
+  </TabItem>
+</Tabs>
+
+## 验证安装
+
+安装完成后，可以通过以下方式验证：
+
+```bash
+# 使用 curl 测试（假设服务器证书是用此 CA 签发的）
+curl https://your-server.local
+
+# 如果没有报错，说明 CA 已被信任
+```
+
+## 注意事项
+
+<Aside type="caution">
+- CA 私钥请妥善保管，泄露后可能被用于签发恶意证书
+- 仅在受信任的设备上安装 CA 根证书
+- 定期检查 CA 证书有效期，到期前更新
+</Aside>
+
+## 常见问题
+
+### 安装后浏览器仍提示不安全？
+
+1. 确认证书已正确安装到系统信任库
+2. 重启浏览器
+3. 检查服务器证书的域名是否与访问地址匹配
+4. Firefox 用户需要单独导入到浏览器
+
+### 如何删除已安装的 CA？
+
+- **macOS**：打开钥匙串访问，找到证书并删除
+- **Windows**：运行 `certmgr.msc`，在"受信任的根证书颁发机构"中删除
+- **Linux**：删除对应的 `.crt` 文件，然后运行 `update-ca-certificates` 或 `update-ca-trust`

@@ -1,0 +1,203 @@
+---
+title: Profile Settings
+description: Manage account information, change password, and configure API access keys
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+The profile settings page allows you to manage basic account information, change your password, and configure API access keys for programmatic access to anssl services.
+
+## Accessing Settings
+
+Visit the [Profile Settings](https://anssl.cn/console/settings/profile) page.
+
+## Account Information
+
+### View Account Information
+
+The top of the page displays your basic account information:
+
+- **Email Address**: Email used for login and receiving notifications
+- **Registration Date**: Account creation date
+- **Account Status**: Current account status (Active/Restricted)
+
+<Aside type="note">
+  Your email address is your unique identifier and cannot be directly modified. To change your email, please contact the support team.
+</Aside>
+
+## Change Password
+
+Regularly changing your password helps protect your account security.
+
+<Steps>
+
+1. **Enter Current Password**
+
+   Enter your current password in the "Current Password" field
+
+2. **Set New Password**
+
+   Enter your new password in the "New Password" field
+
+   Password requirements:
+   - At least 8 characters
+   - Contains uppercase and lowercase letters
+   - Contains numbers
+   - May contain special characters
+
+3. **Confirm New Password**
+
+   Re-enter your new password in the "Confirm Password" field
+
+4. **Submit Changes**
+
+   Click the "Change Password" button to complete the change
+
+</Steps>
+
+<Aside type="caution">
+  After successfully changing your password, you'll need to log in again. Consider using a password manager to save your new password.
+</Aside>
+
+## API Access Keys
+
+API access keys allow programmatic access to the anssl API for automated certificate management.
+
+### What are Access Keys?
+
+An access key is a pair of credentials containing an Access Key ID and Secret Key:
+
+- **Access Key ID**: Public key identifier
+- **Secret Key**: Private key content, displayed only once upon creation
+
+<Aside type="danger">
+  The Secret Key is only displayed once when created. Save it securely. If lost, you must delete the old key and create a new one.
+</Aside>
+
+### Create Access Key
+
+<Steps>
+
+1. Click the "Create Key" button in the "API Access Keys" section
+
+2. The system generates a new access key pair
+
+3. **Immediately copy and save the Secret Key**
+
+   This is the only opportunity to view the complete Secret Key
+
+4. Save the key securely in a password manager or environment variable
+
+</Steps>
+
+### Using Access Keys
+
+Use access keys in your application to call the anssl API:
+
+```bash
+# Set via environment variables
+export ANSSL_ACCESS_KEY_ID="your_access_key_id"
+export ANSSL_SECRET_KEY="your_secret_key"
+```
+
+```javascript
+// Use in code
+const client = new AnSSLClient({
+  accessKeyId: process.env.ANSSL_ACCESS_KEY_ID,
+  secretKey: process.env.ANSSL_SECRET_KEY
+});
+```
+
+### Rotate Access Keys
+
+For enhanced security, it's recommended to rotate access keys regularly:
+
+<Steps>
+
+1. Create a new access key
+
+2. Update your applications with the new key
+
+3. Verify the new key works correctly
+
+4. Delete the old access key
+
+</Steps>
+
+<Aside type="tip">
+  When rotating keys, keep the old key for a while to ensure all applications have been updated before deletion.
+</Aside>
+
+### Delete Access Key
+
+If a key is compromised or no longer needed:
+
+1. Find the corresponding key in the key list
+2. Click the "Delete" button
+3. Confirm the deletion
+
+<Aside type="caution">
+  After deleting a key, all API calls using that key will immediately fail. Ensure related applications are disabled or updated.
+</Aside>
+
+## Security Best Practices
+
+### Password Security
+
+- ✅ Use strong passwords (containing uppercase, lowercase, numbers, and special characters)
+- ✅ Change passwords regularly (recommended every 3-6 months)
+- ✅ Don't use the same password across multiple sites
+- ✅ Use a password manager to generate and store passwords
+- ❌ Don't share your password with others
+- ❌ Don't save passwords on public devices
+
+### API Key Security
+
+- ✅ Store keys in environment variables or key management systems
+- ✅ Rotate keys regularly (recommended every 90 days)
+- ✅ Create different keys for different applications
+- ✅ Delete unused keys promptly
+- ❌ Don't hard-code keys in source code
+- ❌ Don't commit keys to version control systems
+- ❌ Don't output keys in logs
+
+<Aside type="tip">
+  Use `.env` files to store keys and add `.env` to `.gitignore`.
+</Aside>
+
+## Account Security Monitoring
+
+The system monitors abnormal account activities:
+
+- Logins from unusual locations
+- Frequent password change attempts
+- Abnormal API calling patterns
+- Multiple failed authentication attempts
+
+If suspicious activity is detected, the system will:
+
+1. Send security notifications to your email
+2. Potentially restrict account access temporarily
+3. Require identity re-verification
+
+<Aside type="note">
+  If you receive a security warning that wasn't initiated by you, immediately change your password and check your access keys.
+</Aside>
+
+## FAQ
+
+### What if I forget my password?
+
+Click "Forgot Password" on the login page to reset your password via email verification.
+
+### How many access keys can I create?
+
+Each account can create up to 5 active access keys. To create more, delete unused keys first.
+
+### Do API keys have usage limits?
+
+Access keys themselves don't expire, but regular rotation is recommended. API calls have rate limits - see API documentation for details.
+
+### What if my key is compromised?
+
+Immediately delete the compromised key and create a new one. Check for unauthorized API call records.

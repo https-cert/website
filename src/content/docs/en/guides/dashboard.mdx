@@ -1,0 +1,173 @@
+---
+title: Dashboard
+description: Real-time monitoring of certificates, domain monitoring, and deployment status for a complete overview of your certificate management
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+The anssl dashboard provides a comprehensive view of your certificate management system, using real-time statistics and visual charts to help you quickly understand system status and key metrics.
+
+## Accessing the Dashboard
+
+After logging in, you'll land on the dashboard by default: [https://anssl.cn/console/dashboard](https://anssl.cn/console/dashboard)
+
+## Main Features
+
+### Real-time Statistics Overview
+
+The top of the dashboard displays four key metric cards:
+
+- **Total Certificates**: Current number of certificates under management
+- **Total Monitors**: Number of domains being monitored
+- **Total Deployments**: Number of configured deployment tasks
+- **Today's Operations**: Certificate applications, deployments, and other operations today
+
+<Aside type="tip">
+  Click any statistics card to quickly navigate to the corresponding management page.
+</Aside>
+
+### Certificate Status Distribution
+
+A pie chart visualizes the distribution of certificates by status:
+
+- **Issued**: Certificates in normal use
+- **Expiring Soon**: Certificates expiring within 30 days
+- **Expired**: Certificates that have already expired
+- **Applying**: Certificates currently being applied for
+- **Revoked**: Certificates that have been revoked
+
+<Aside type="caution">
+  Pay special attention to "Expiring Soon" and "Expired" certificates, and renew them in a timely manner.
+</Aside>
+
+### Monitor Status Statistics
+
+Shows real-time status of domain monitoring:
+
+- **Active**: Certificate valid and not approaching expiration
+- **Alert**: Certificate expiring soon or has issues
+- **Resolved**: Previous alerts have been addressed
+
+### Deployment Status Tracking
+
+Displays deployment task execution status:
+
+- **Pending**: Deployment tasks in queue
+- **Success**: Deployment completed successfully
+- **Failed**: Deployment execution failed, requires investigation
+
+### Trend Charts
+
+#### Certificate Trends
+
+Line chart showing certificate changes over the selected time range:
+
+- Number of certificate applications
+- Number of expired certificates
+- Number of certificate renewals
+
+#### Monitoring Trends
+
+Shows changes in domain monitoring status:
+
+- New monitors added
+- Alert count changes
+- Issues resolved
+
+#### Deployment Trends
+
+Tracks deployment task execution:
+
+- Total deployment tasks
+- Success rate changes
+- Failure rate statistics
+
+## View Settings
+
+### Time Range Selection
+
+The dashboard supports multiple time ranges:
+
+- **Last 7 Days**: View data for the past week
+- **Last 30 Days**: View data for the past month
+- **Last 90 Days**: View data for the past quarter
+
+<Aside type="note">
+  Time range settings apply to all trend charts simultaneously, making it easy to compare data across different periods.
+</Aside>
+
+### Display Density
+
+Adjust the dashboard display density:
+
+- **Default**: Standard card spacing and size
+- **Compact**: Reduced spacing to show more content on one screen
+
+### Auto-refresh
+
+Dashboard data automatically refreshes periodically to ensure the latest statistics are displayed. You can also manually refresh by clicking the refresh button.
+
+## Data Interpretation Guidelines
+
+### Certificate Health
+
+Assess the health of your certificate management:
+
+- ✅ **Good**: Expired and expiring certificates < 5%
+- ⚠️ **Needs Attention**: Expiring certificates between 5-10%
+- 🚨 **Immediate Action Required**: Expired or expiring certificates > 10%
+
+### Monitoring Coverage
+
+It's recommended to configure monitoring for all important domains:
+
+- All production environment domains
+- Customer-facing service domains
+- API and microservice domains
+
+### Deployment Success Rate
+
+Monitor deployment success rate metrics:
+
+- **Excellent**: Success rate > 95%
+- **Good**: Success rate 85-95%
+- **Needs Optimization**: Success rate < 85%
+
+<Aside type="tip">
+  If deployment failure rate is high, check deployment target configuration and network connectivity.
+</Aside>
+
+## Quick Actions
+
+Execute common operations directly from the dashboard:
+
+- **Apply for New Certificate**: Click "New" button on certificate card
+- **Add Monitor**: Click "Add" button on monitor card
+- **Create Deployment**: Click "Create" button on deployment card
+
+## Mobile Support
+
+The dashboard is fully responsive and supports mobile devices, allowing you to check system status anytime on your phone or tablet. The layout automatically adjusts for small screens.
+
+## Best Practices
+
+### Daily Checklist
+
+It's recommended to check the dashboard daily for:
+
+1. Certificates expiring soon that need renewal
+2. Monitoring alerts that need attention
+3. Failed deployments that need retry
+4. Today's operations completed normally
+
+### Regular Review
+
+Review trend charts weekly or monthly to:
+
+- Analyze certificate application and usage patterns
+- Identify potential capacity planning needs
+- Optimize deployment strategies and monitoring configurations
+
+<Aside type="note">
+  Dashboard data helps you understand system usage and provides insights for capacity planning and resource optimization.
+</Aside>

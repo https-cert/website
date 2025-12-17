@@ -1,0 +1,321 @@
+---
+title: Notification Settings
+description: Configure multi-channel notifications to receive timely alerts for certificate expiration, deployment status, and other important events
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+Notification settings allow you to configure multiple notification channels to receive timely alerts when important events occur, such as certificate expiration, deployment completion, and monitoring alerts.
+
+## Accessing Notification Settings
+
+Visit the [Notification Settings](https://anssl.cn/console/settings/notification) page.
+
+## Supported Notification Channels
+
+anssl supports the following notification channels:
+
+### Email Notifications
+
+Receive notifications via email, sent to your registered account email by default.
+
+**Advantages:**
+- No additional configuration required
+- Suitable for detailed notification content
+- Long-term storage and query capabilities
+
+**Use Cases:**
+- Certificate expiration reminders
+- Daily/weekly reports
+- Important event notifications
+
+### Webhook
+
+Send notifications to your specified URL via HTTP POST requests, suitable for integration with other systems.
+
+**Configuration Parameters:**
+- **Webhook URL**: HTTP endpoint to receive notifications
+- **Secret**: Key for verifying request source
+- **Headers**: Custom HTTP request headers
+
+**Webhook Request Format:**
+
+```json
+{
+  "event": "certificate_expiring",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "data": {
+    "certificate_id": "cert_123456",
+    "domain": "example.com",
+    "expires_at": "2025-02-15T00:00:00Z",
+    "days_remaining": 30
+  }
+}
+```
+
+**Use Cases:**
+- Integration with ticketing systems
+- Automated workflow triggers
+- Custom notification processing
+
+<Aside type="tip">
+  Webhook requests include an `X-AnSSL-Signature` header for verifying request authenticity.
+</Aside>
+
+### DingTalk
+
+Send notifications to DingTalk group chats via DingTalk robot.
+
+**Configuration Steps:**
+
+<Steps>
+
+1. Add a custom robot in your DingTalk group
+
+2. Get the Webhook URL (format: `https://oapi.dingtalk.com/robot/send?access_token=xxx`)
+
+3. If security settings are enabled, get the signature secret
+
+4. Enter the Webhook URL and secret in anssl
+
+</Steps>
+
+**Use Cases:**
+- Team collaboration notifications
+- Instant alerts
+- Mobile notifications
+
+### Feishu/Lark
+
+Send notifications to Feishu group chats via Feishu robot.
+
+**Configuration Steps:**
+
+<Steps>
+
+1. Add a custom robot in your Feishu group
+
+2. Get the Webhook URL
+
+3. If signature verification is enabled, get the signature secret
+
+4. Enter the Webhook URL and secret in anssl
+
+</Steps>
+
+**Use Cases:**
+- Internal enterprise notifications
+- Cross-department collaboration
+- Quick alert response
+
+## Notification Event Configuration
+
+### Certificate Expiration Reminders
+
+Send reminder notifications when certificates are about to expire.
+
+**Configuration Options:**
+- **Enable/Disable**: Toggle this notification type
+- **Days in Advance**: How many days before expiration to start reminders (recommended: 30 days)
+- **Notification Channels**: Select channels to receive notifications (multiple selections allowed)
+
+**Reminder Frequency:**
+- 30 days before expiry: First reminder
+- 15 days before expiry: Second reminder
+- 7 days before expiry: Third reminder
+- 3 days before expiry: Urgent reminder
+- 1 day before expiry: Final reminder
+
+<Aside type="caution">
+  Even if expiration reminders are disabled, the system will still send an urgent notification on the day the certificate expires.
+</Aside>
+
+### Certificate Application Events
+
+Send notifications when certificate applications succeed or fail.
+
+**Event Types:**
+- **Application Success**: Certificate successfully issued
+- **Application Failed**: Certificate application failed, includes failure reason
+
+**Notification Content:**
+- Certificate domain
+- Application time
+- Certificate validity period
+- Failure reason (if failed)
+
+### Deployment Events
+
+Notification of certificate deployment status to target servers.
+
+**Event Types:**
+- **Deployment Success**: Certificate successfully deployed to target
+- **Deployment Failed**: Error occurred during deployment
+
+**Notification Content:**
+- Certificate information
+- Deployment target
+- Deployment time
+- Failure reason (if failed)
+
+<Aside type="tip">
+  It's recommended to enable deployment failure notifications for timely issue detection and resolution.
+</Aside>
+
+### Monitoring Alerts
+
+Send alerts when domain monitoring detects certificate issues.
+
+**Alert Trigger Conditions:**
+- Certificate expiring soon
+- Certificate expired
+- Certificate validation failed
+- Domain resolution errors
+
+**Notification Content:**
+- Monitored domain
+- Alert type
+- Current status
+- Recommended actions
+
+## Test Notification Channels
+
+After configuring notification channels, it's recommended to test them to ensure correct configuration.
+
+<Steps>
+
+1. Complete notification channel configuration
+
+2. Click the "Test" button next to the channel
+
+3. The system will send a test message to that channel
+
+4. Confirm receipt of the test message
+
+</Steps>
+
+<Aside type="note">
+  If the test fails, check if the URL is correct, network is reachable, and keys match.
+</Aside>
+
+## Notification History
+
+The notification history is displayed at the bottom of the notification settings page.
+
+**History Records Include:**
+- Send time
+- Event type
+- Notification channel
+- Send status (Success/Failed)
+- Failure reason (if failed)
+
+**Filter Options:**
+- Filter by time range
+- Filter by event type
+- Filter by notification channel
+- Filter by send status
+
+<Aside type="tip">
+  Notification history retains records for the last 30 days, useful for troubleshooting and reviewing notification activity.
+</Aside>
+
+## Notification Best Practices
+
+### Channel Selection Recommendations
+
+Different event types are suitable for different notification channels:
+
+| Event Type | Recommended Channels | Rationale |
+|-----------|---------------------|-----------|
+| Certificate Expiration | Email + DingTalk/Feishu | Detailed records + immediate team notification |
+| Application Success | Email | Detailed record, no immediate response needed |
+| Application Failed | DingTalk/Feishu + Webhook | Requires quick action |
+| Deployment Success | Email | Record only |
+| Deployment Failed | DingTalk/Feishu + Webhook | Requires immediate fix |
+| Monitoring Alerts | All Channels | Emergency, multiple channels ensure receipt |
+
+### Avoid Notification Fatigue
+
+- ✅ Only enable truly necessary notifications
+- ✅ Set reminder days appropriately to avoid too early or too late
+- ✅ Configure different notification channels for different teams
+- ✅ Regularly review notification history and optimize configuration
+- ❌ Don't send all events to all channels
+- ❌ Don't set overly frequent reminders
+
+### Notification Priority
+
+Recommended priority-based notification configuration:
+
+**P0 (Urgent):**
+- Certificate expired
+- Critical issues detected by monitoring
+- Deployment failed
+- Notification: All channels, immediate response
+
+**P1 (Important):**
+- Certificate expiring within 7 days
+- Application failed
+- Notification: DingTalk/Feishu + Email, handle same day
+
+**P2 (Normal):**
+- Certificate expiring within 30 days
+- Deployment success
+- Application success
+- Notification: Email, routine handling
+
+### Security Recommendations
+
+- ✅ Regularly rotate Webhook secrets
+- ✅ Use HTTPS URLs for receiving Webhooks
+- ✅ Verify Webhook request signatures
+- ✅ Restrict Webhook URL access permissions
+- ❌ Don't expose Webhook URLs in public channels
+- ❌ Don't hard-code secrets in source code
+
+## Troubleshooting
+
+### Not Receiving Email Notifications
+
+1. Check if email address is correct
+2. Check spam folder
+3. Confirm email provider isn't blocking emails from anssl
+4. Check send status in notification history
+
+### Webhook Notifications Failing
+
+1. Confirm URL is accessible from the internet
+2. Check if SSL certificate is valid
+3. Verify secret configuration is correct
+4. Review server logs for errors
+5. Use test function to verify configuration
+
+### DingTalk/Feishu Notifications Failing
+
+1. Confirm Webhook URL is correct
+2. Check if robot is disabled
+3. Verify signature secret matches
+4. Confirm group chat exists
+5. Check if robot send frequency is exceeded
+
+<Aside type="tip">
+  Most notification failures are caused by configuration errors. The test function can quickly identify issues.
+</Aside>
+
+## FAQ
+
+### Can I configure multiple channels of the same type?
+
+Yes. For example, you can configure multiple Webhook URLs to send notifications to different systems.
+
+### Will notifications be sent repeatedly?
+
+No. Each event triggers a notification only once. However, certificate expiration will send multiple reminders at different times.
+
+### How do I disable all notifications?
+
+Disable all event types on the notification settings page. However, it's not recommended to completely disable notifications; keep at least urgent event notifications enabled.
+
+### Are there send frequency limits for notifications?
+
+To prevent abuse, each channel can send up to 20 notifications per minute. Normal usage won't hit this limit.

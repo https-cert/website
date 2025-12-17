@@ -25,3 +25,4 @@ release
 pnpm-lock.yaml
 CLAUDE.md
 AGENTS.md
+bun.lock

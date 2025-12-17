@@ -1,0 +1,143 @@
+---
+title: CA Root Certificate Guide
+description: How to download, install, and use self-signed CA root certificates
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+This guide explains how to download and install CA root certificates so that your system or browser trusts certificates issued by this CA.
+
+## What is a CA Root Certificate?
+
+A CA (Certificate Authority) root certificate is the root node of a certificate trust chain. When you create a private CA and use it to issue server certificates, clients need to trust this CA root certificate to automatically trust all certificates it issues.
+
+<Aside type="tip">
+Use cases: Internal development environments, testing environments, enterprise intranet services, and other scenarios that don't require public trust.
+</Aside>
+
+## Download CA Root Certificate
+
+<Steps>
+1. Go to **Console -> Self-signed Certificates -> CA Management**
+2. Find the CA you need to download, click the **Download** button
+3. In the popup dialog, click **Download** to save the `xxx-ca.crt` file
+</Steps>
+
+## Install CA Root Certificate
+
+<Tabs>
+  <TabItem label="macOS">
+    ### Method 1: Keychain Access (Recommended)
+
+    <Steps>
+    1. Double-click the downloaded `.crt` file
+    2. In the "Keychain Access" popup, choose to add to the **System** keychain
+    3. Find the newly added certificate and double-click to open it
+    4. Expand the **Trust** section
+    5. Change "When using this certificate" to **Always Trust**
+    6. Close the window and enter your password to confirm
+    </Steps>
+
+    ### Method 2: Command Line
+
+    ```bash
+    sudo security add-trusted-cert -d -r trustRoot \
+      -k /Library/Keychains/System.keychain \
+      ~/Downloads/xxx-ca.crt
+    ```
+  </TabItem>
+
+  <TabItem label="Windows">
+    ### Method 1: GUI
+
+    <Steps>
+    1. Double-click the downloaded `.crt` file
+    2. Click **Install Certificate**
+    3. Select **Local Machine**, click Next
+    4. Select **Place all certificates in the following store**
+    5. Click **Browse**, select **Trusted Root Certification Authorities**
+    6. Complete the installation
+    </Steps>
+
+    ### Method 2: Command Line (Administrator)
+
+    ```powershell
+    certutil -addstore -f "ROOT" C:\path\to\xxx-ca.crt
+    ```
+  </TabItem>
+
+  <TabItem label="Linux">
+    ### Ubuntu/Debian
+
+    ```bash
+    # Copy certificate to trust directory
+    sudo cp xxx-ca.crt /usr/local/share/ca-certificates/
+
+    # Update certificate trust store
+    sudo update-ca-certificates
+    ```
+
+    ### CentOS/RHEL/Fedora
+
+    ```bash
+    # Copy certificate
+    sudo cp xxx-ca.crt /etc/pki/ca-trust/source/anchors/
+
+    # Update trust store
+    sudo update-ca-trust
+    ```
+  </TabItem>
+
+  <TabItem label="Browsers">
+    ### Chrome
+
+    Chrome uses the system certificate store, so it will work automatically after installing to the system.
+
+    ### Firefox
+
+    Firefox uses its own certificate store and requires separate import:
+
+    <Steps>
+    1. Open **Settings -> Privacy & Security**
+    2. Scroll to **Certificates** section, click **View Certificates**
+    3. Select the **Authorities** tab
+    4. Click **Import**, select the `.crt` file
+    5. Check **Trust this CA to identify websites**
+    6. Click OK
+    </Steps>
+  </TabItem>
+</Tabs>
+
+## Verify Installation
+
+After installation, you can verify with the following:
+
+```bash
+# Test with curl (assuming the server certificate was issued by this CA)
+curl https://your-server.local
+
+# If there's no error, the CA is trusted
+```
+
+## Important Notes
+
+<Aside type="caution">
+- Keep the CA private key secure; if leaked, it could be used to issue malicious certificates
+- Only install CA root certificates on trusted devices
+- Regularly check CA certificate expiration and renew before expiry
+</Aside>
+
+## FAQ
+
+### Browser still shows "Not Secure" after installation?
+
+1. Verify the certificate is correctly installed in the system trust store
+2. Restart the browser
+3. Check if the server certificate's domain matches the access address
+4. Firefox users need to import separately into the browser
+
+### How to remove an installed CA?
+
+- **macOS**: Open Keychain Access, find the certificate and delete it
+- **Windows**: Run `certmgr.msc`, delete from "Trusted Root Certification Authorities"
+- **Linux**: Delete the corresponding `.crt` file, then run `update-ca-certificates` or `update-ca-trust`

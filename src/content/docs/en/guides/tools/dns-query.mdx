@@ -1,0 +1,163 @@
+---
+title: DNS Query Tool
+description: Query DNS records for domains, supporting multiple record types and custom nameservers
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+The DNS Query Tool helps you quickly query various DNS records for domains, supports specifying custom nameservers, and is suitable for domain configuration verification, troubleshooting, and DNS propagation checks.
+
+## Access the Tool
+
+Visit the [DNS Query Tool](https://anssl.cn/console/tools/dns-query) page.
+
+## Usage
+
+<Steps>
+
+1. **Enter Domain**
+
+   Enter the domain to query, for example: `example.com`
+
+2. **Select Record Type**
+
+   Choose the DNS record type from the dropdown menu
+
+3. **Optional: Specify Nameserver**
+
+   To use a specific DNS server, enter its address (e.g., `8.8.8.8`)
+
+4. **Start Query**
+
+   Click the "Query" button to retrieve results
+
+</Steps>
+
+## Supported Record Types
+
+### A Record
+
+Resolves domain to IPv4 address - the most common DNS record type for pointing domains to servers.
+
+### AAAA Record
+
+Resolves domain to IPv6 address for IPv6 network support and dual-stack configurations.
+
+### CNAME Record
+
+Creates domain alias, pointing one domain to another. Commonly used for subdomains, CDN configuration, and domain verification.
+
+<Aside type="caution">
+  CNAME records cannot coexist with other record types at the same domain name.
+</Aside>
+
+### TXT Record
+
+Stores text information, commonly used for domain verification and configuration such as SPF, DKIM, DMARC, and SSL certificate verification.
+
+<Aside type="note">
+  When applying for SSL certificates, DNS verification requires adding specific TXT records.
+</Aside>
+
+### MX Record
+
+Specifies mail servers for receiving email, with priority values (lower numbers = higher priority).
+
+### NS Record
+
+Specifies authoritative nameservers for the domain, useful for checking DNS providers and domain delegation.
+
+### SOA Record
+
+Start of Authority record containing domain management information including serial, refresh, retry, expire, and minimum TTL values.
+
+### SRV Record
+
+Specifies service location information including priority, weight, port, and target host. Used for VoIP, instant messaging, and service discovery.
+
+### PTR Record
+
+Reverse DNS lookup resolving IP addresses to domain names, commonly used for mail server verification and security audits.
+
+### CAA Record
+
+Specifies which Certificate Authorities are allowed to issue certificates for the domain, enhancing security by preventing unauthorized certificate issuance.
+
+<Aside type="tip">
+  Configuring CAA records prevents unauthorized CAs from issuing certificates for your domain, improving security.
+</Aside>
+
+## Custom Nameservers
+
+Specify particular DNS servers for queries to check DNS propagation or troubleshoot resolution issues.
+
+**Popular Public DNS:**
+- `8.8.8.8` / `8.8.4.4` (Google DNS)
+- `1.1.1.1` / `1.0.0.1` (Cloudflare DNS)
+- `208.67.222.222` (OpenDNS)
+
+## Understanding Results
+
+### TTL (Time To Live)
+
+TTL indicates how long DNS records are cached (in seconds). Common values: 300 (5 min), 3600 (1 hour), 86400 (24 hours).
+
+**TTL Strategy:**
+- Before migration: Lower TTL to 300
+- During migration: Execute changes
+- After migration: Observe 1-2 days
+- When stable: Increase TTL to 3600+
+
+## Use Cases
+
+### Certificate Application Verification
+
+Verify TXT records for SSL certificate DNS validation using the tool before CA verification.
+
+### Domain Configuration Checks
+
+Before configuring websites or services, check A/AAAA, CNAME, MX, and TXT records to ensure correct configuration.
+
+### Troubleshooting
+
+Query A records, NS records, and use multiple DNS servers to compare results when encountering domain access issues.
+
+### Security Checks
+
+Regularly check CAA records, SPF/DKIM configurations, and DNSSEC status for domain security.
+
+## Best Practices
+
+### DNS Record Configuration
+
+- ✅ Configure multiple NS records (at least 2)
+- ✅ Set reasonable TTL values (3600 daily, 300 before migration)
+- ✅ Configure CAA records to restrict certificate issuance
+- ✅ Set up SPF, DKIM, DMARC for email services
+- ❌ Don't use CNAME for root domains
+- ❌ Don't set excessively low TTL values
+
+### Record Update Process
+
+1. Preparation: Lower TTL to 300, wait for old TTL to expire
+2. Update: Modify DNS records, verify with tool
+3. Verification: Query multiple public DNS servers
+4. Stabilization: Observe 1-2 days, restore normal TTL
+
+## FAQ
+
+### Why are query results inconsistent?
+
+Possible reasons: DNS cache not updated, different cache times across servers, recent DNS record updates not fully propagated, or querying different nameservers.
+
+### How long until DNS records take effect?
+
+Depends on TTL: 300s = 5-10 minutes, 3600s = 1-2 hours. Full global propagation typically takes 24-48 hours.
+
+### How to speed up DNS propagation?
+
+Lower TTL to 300 in advance, wait for old TTL to expire before updating, use multiple authoritative servers, and clear local DNS cache after updates.
+
+<Aside type="tip">
+  Regularly use the DNS Query Tool to check important domain configurations and ensure proper resolution.
+</Aside>
