@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://doc.anssl.cn',
+	site: 'https://docs.anssl.cn',
 	// base: '/doc/',
 
 	integrations: [
