@@ -46,7 +46,7 @@ anssl is an SSL/TLS certificate lifecycle platform that gives individual develop
 ### Secure and reliable
 
 - **Encrypted storage**: Sensitive data is encrypted at rest.
-- **Local key generation**: Private keys are generated in the browser so they never touch our servers.
+- **Clear key handling**: For CSR generation, private keys are created and downloaded in the browser without being stored; for certificate issuance, the private key is stored in encrypted form.
 
 ### Operational efficiency
 
