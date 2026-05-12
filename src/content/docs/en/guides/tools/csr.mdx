@@ -43,8 +43,8 @@ You submit the CSR to a CA; after validation, the CA signs it and returns the ce
    - **Locality (L)** — City name.
 
 4. **Choose a signing algorithm**  
-   - **RSA-2048 / 3072 / 4096** — Maximizes compatibility at increasing security levels.  
-   - **ECC P-256 / P-384** — Recommended for modern workloads thanks to smaller keys and faster handshakes.
+   - **RSA2048 / RSA3072 / RSA4096** — Maximizes compatibility at increasing security levels.  
+   - **EC256 / EC384** — Recommended for modern workloads thanks to smaller keys and faster handshakes.
 
 5. **Generate**  
    Click **Generate** to produce the CSR (submit to the CA) and a matching private key.
@@ -124,16 +124,16 @@ Choose ECC for modern web, mobile, and high-throughput workloads.
 
 ### Comparison
 
-| Algorithm   | Key length | Equivalent security | Performance | Compatibility |
-| ----------- | ---------- | ------------------- | ----------- | ------------- |
-| RSA-2048    | 2048 bits  | Baseline            | ★★★☆☆      | ★★★★★         |
-| RSA-3072    | 3072 bits  | High                | ★★☆☆☆      | ★★★★★         |
-| RSA-4096    | 4096 bits  | Very high           | ★☆☆☆☆      | ★★★★★         |
-| ECC P-256   | 256 bits   | ≈ RSA-3072          | ★★★★★      | ★★★★☆         |
-| ECC P-384   | 384 bits   | ≈ RSA-7680          | ★★★★☆      | ★★★★☆         |
+| Algorithm | Key length | Equivalent security | Performance | Compatibility |
+| --------- | ---------- | ------------------- | ----------- | ------------- |
+| RSA2048   | 2048 bits  | Baseline            | ★★★☆☆       | ★★★★★         |
+| RSA3072   | 3072 bits  | High                | ★★☆☆☆       | ★★★★★         |
+| RSA4096   | 4096 bits  | Very high           | ★☆☆☆☆       | ★★★★★         |
+| EC256     | 256 bits   | ≈ RSA3072           | ★★★★★       | ★★★★☆         |
+| EC384     | 384 bits   | ≈ RSA7680           | ★★★★☆       | ★★★★☆         |
 
 <Aside type="tip">
-  ECC P-256 offers the best balance of performance and security for most deployments.
+  EC256 offers the best balance of performance and security for most deployments.
 </Aside>
 
 ## Generated files

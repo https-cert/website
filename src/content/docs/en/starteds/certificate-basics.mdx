@@ -41,15 +41,14 @@ The signing algorithm defines how a certificate’s authenticity is verified. Di
 
 ### RSA
 
-- **RSA-2048** – Widely supported with strong security.  
-- **RSA-3072** – Higher assurance for stricter policies.  
-- **RSA-4096** – Maximum strength, but heavier CPU usage.
+- **RSA2048** – Widely supported with strong security.  
+- **RSA3072** – Higher assurance for stricter policies.  
+- **RSA4096** – Maximum strength, but heavier CPU usage.
 
 ### ECDSA (ECC)
 
-- **P-256** – Comparable to RSA-3072 with better performance.  
-- **P-384** – Comparable to RSA-7680 for higher security margins.  
-- **P-521** – Equivalent strength to RSA-15360, rarely needed outside specialized environments.
+- **EC256** – Comparable to RSA3072 with better performance.  
+- **EC384** – Comparable to RSA7680 for higher security margins.  
 
 ### Comparing the algorithms
 
@@ -62,12 +61,12 @@ The signing algorithm defines how a certificate’s authenticity is verified. Di
 
 ### Selection guidance
 
-- Use **ECC P-256** for most modern workloads.  
-- Choose **ECC P-384** or **RSA-3072** for higher-assurance environments.  
-- Stick with **RSA-2048** when maximum compatibility is mandatory.  
+- Use **EC256** for most modern workloads.  
+- Choose **EC384** or **RSA3072** for higher-assurance environments.  
+- Stick with **RSA2048** when maximum compatibility is mandatory.  
 - Pick ECDSA when low latency and resource efficiency are priorities.  
-- anssl defaults to ECC P-256 for new requests.
+- anssl defaults to EC256 for new requests.
 
 <Aside type="caution" title="Algorithm safety note">
-  Legacy algorithms such as RSA-1024 or MD5-signed certificates are no longer secure. anssl excludes unsafe options so all new certificates meet modern security expectations.
+  Legacy algorithms such as RSA1024 or MD5-signed certificates are no longer secure. anssl excludes unsafe options so all new certificates meet modern security expectations.
 </Aside>
