@@ -76,6 +76,11 @@ export default defineConfig({
 							slug: 'guides/deploy',
 						},
 						{
+							label: '开放平台',
+							translations: { 'en-US': 'Open Platform' },
+							slug: 'guides/openapi',
+						},
+						{
 							label: '本地证书',
 							translations: { 'en-US': 'Self-signed Certificates' },
 							items: [
@@ -135,6 +140,11 @@ export default defineConfig({
 									label: 'SSL/TLS 证书检查',
 									translations: { 'en-US': 'SSL/TLS Certificate Check' },
 									slug: 'guides/tools/ssl-check',
+								},
+								{
+									label: '配置生成器',
+									translations: { 'en-US': 'Config Generator' },
+									slug: 'guides/tools/config-generator',
 								},
 							]
 						},

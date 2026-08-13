@@ -1,17 +1,17 @@
 ---
 title: Automated deployment
-description: Manage deployment clients, certificate bindings, business targets, logs, and client upgrades.
+description: Connect a deploy client, choose local, panel, or cloud targets, and push certificates after issue and renewal.
 sidebar:
   label: Automated Deployment
 ---
 
 import { Aside, Steps } from "@astrojs/starlight/components";
 
-Automated deployment syncs issued certificates to servers, cloud platforms, or other business targets. The latest frontend manages deployment clients, certificate bindings, target configuration, manual deployment execution, logs, and client upgrades. Open it at [Automated deployment](https://anssl.cn/console/deploy).
+Automated deployment syncs issued certificates to local services, operations panels, or public-cloud products. The console groups targets as **local / panel / cloud**. CDN hostnames, load-balancer listeners, and panel sites are discovered by the deploy client, so you do not type resource IDs. Open it at [Automated deployment](https://anssl.cn/console/deploy).
 
 ## Page overview
 
-The automated deployment page lists connected deployment clients and provides:
+The automated deployment page lists connected deploy clients and provides:
 
 - Online and offline client summaries.
 - Client search by IP address.
@@ -19,7 +19,7 @@ The automated deployment page lists connected deployment clients and provides:
 - Table column configuration.
 - Client detail drawer.
 - Certificate binding dialog.
-- Business target configuration.
+- Target configuration by local, panel, or cloud category.
 - Runtime logs.
 - Remark editing, enable/disable, and deletion.
 - Single or batch client upgrade notifications.
@@ -28,26 +28,26 @@ The automated deployment page lists connected deployment clients and provides:
 
 <Steps>
 
-1. **Download the client**
+1. **Generate client config**
 
-   Click **Download client** on the deployment page to get the deployment CLI.
+   Open the [config generator](https://anssl.cn/console/tools/config-generator) and switch to **Automated deployment**. Enter the Access Key, enable Nginx / Apache / 1Panel / BT Panel / fnOS / SafeLine or cloud credentials as needed, then download `config.yaml` and copy the install commands.
 
-2. **Install and configure it**
+2. **Install the CLI on the target host**
 
-   Install the CLI on the target server or runtime, then configure access credentials, platform credentials, and startup behavior according to the client documentation.
+   Run the install commands, place the config in the client directory, and start the daemon. You can also download the [deploy CLI](https://github.com/https-cert/deploy) from the open-source repository link on the page.
 
 3. **Wait for the client to come online**
 
-   After it connects successfully, the client appears in the deployment list with IP, hostname, OS, architecture, version, and status.
+   After it connects, the client appears in the list with IP, hostname, OS, architecture, version, and status.
 
 4. **Add a remark**
 
-   Add a business remark such as "production Nginx", "test IIS", or "CDN node" so the client is easier to find and maintain.
+   Add a business remark such as "production Nginx", "BT Panel", or "Aliyun CDN" so the client is easier to find.
 
 </Steps>
 
 <Aside type="tip">
-  The page includes an open-source repository link for the deployment client. Online upgrade requires a client version that supports it; older clients must be upgraded manually first.
+  Cloud credentials stay in the client-side config. The console does not keep plaintext keys. CDN domains, load-balancer listeners, and panel sites are discovered when you add a target.
 </Aside>
 
 ## Bind certificates
@@ -66,15 +66,50 @@ After a client is online, bind certificates to it.
 
 3. **Confirm binding**
 
-   After binding succeeds, the client shows its linked certificates. Binding only connects the client and certificate; configure business targets next to define where the certificate is deployed.
+   Binding only connects the client and certificate. Configure targets next to define where the certificate is written.
 
 </Steps>
 
-You can also bind certificates to clients from [Certificate management](./certificate-management).
+You can also bind certificates from [Certificate management](./certificate-management).
+
+## Supported targets
+
+### Local services
+
+The CLI writes certificate files on the host. SSH does not need to be exposed:
+
+- Nginx
+- Apache
+- RustFS
+- OpenVPN-AS
+- Upload only
+
+### Panel services
+
+Write into a panel certificate store, or bind a discovered website:
+
+- 1Panel certificate store and 1Panel website
+- BT Panel certificate store and BT Panel website
+- fnOS
+- SafeLine WAF
+
+### Cloud services
+
+Upload the certificate to the provider, then bind a specific product:
+
+| Provider | Products |
+| -------- | -------- |
+| Alibaba Cloud | Certificate upload, CDN, DCDN, ESA, OSS custom domain, CLB, ALB, NLB |
+| Tencent Cloud | Certificate upload, CDN, EdgeOne, COS custom domain, CLB |
+| Qiniu | Certificate upload, CDN, DCDN |
+
+<Aside type="note">
+  Qiniu object-storage certificate binding has been removed. OSS / COS targets bind custom-domain certificates; they do not upload PEM files into a bucket.
+</Aside>
 
 ## Configure deployment targets
 
-Each bound certificate can have deployment targets. A target combines a provider and a business type, with available options reported by the online client.
+Each bound certificate can have deployment targets. Available options come from the online client.
 
 <Steps>
 
@@ -84,35 +119,39 @@ Each bound certificate can have deployment targets. A target combines a provider
 
 2. **Confirm the client is online**
 
-   Offline clients can only view or delete saved targets. They cannot read platform configuration, test connections, or execute deployment.
+   Offline clients can only view or delete saved targets. They cannot load resource catalogs, test connections, or deploy.
 
-3. **Choose provider and business type**
+3. **Choose a category and business**
 
-   Providers without CLI credentials are disabled and shown in the warning message.
+   Start with local, panel, or cloud. For cloud, pick Alibaba Cloud, Tencent Cloud, or Qiniu. Providers missing from the CLI config are disabled.
 
-4. **Test the connection**
+4. **Select an exact resource**
 
-   A new target must pass connection testing before it can be added.
+   Resource businesses such as CDN, load balancers, 1Panel websites, and BT Panel websites list the catalog discovered by the client. Search by domain or label, then pick a ready resource. The certificate SAN must cover the domains required by that resource.
 
-5. **Save the target**
+5. **Test the connection**
 
-   Saved targets are grouped by provider.
+   A new target must pass the test for the current selection before it can be added.
 
-6. **Run manual deployment**
+6. **Save and optionally deploy now**
 
-   Use **Manual deploy** on an existing target to push the current certificate immediately.
+   Saved targets are grouped by category. Use **Manual deploy** to push the current certificate immediately.
 
 </Steps>
 
 <Aside type="note">
-  Single-domain certificates can have one deployment target. Multi-domain certificates are limited by domain count. Wildcard certificates are limited to 10 targets in the frontend.
+  Single-domain certificates can have one regular target. Multi-domain certificates are limited by domain count. Wildcard certificates are limited to 10 targets in the frontend. Upload-only cannot be mixed with other CLI local or panel businesses.
+</Aside>
+
+<Aside type="caution">
+  If the cloud catalog returns permission denied, the page lists the read and certificate-write Actions required for that product. Grant those Actions on a RAM/sub-user and refresh. Do not paste AccessKeys into tickets or chat.
 </Aside>
 
 ## Enable or disable deployment
 
 Each client has an automated deployment switch:
 
-- Enabled: the client can participate in certificate sync and target deployment.
+- Enabled: the client can sync certificates and deploy to targets.
 - Disabled: automated deployment for that client is paused.
 
 You can select multiple clients and enable or disable them in bulk.
@@ -131,7 +170,7 @@ The detail drawer shows:
 
 ## View logs
 
-The log dialog helps diagnose connection, update, certificate sync, deployment execution, and error messages. If deployment fails, check logs first, then verify client platform credentials, business targets, and service permissions.
+The log dialog helps diagnose connection, update, certificate sync, deployment, and errors. If deploy fails or a catalog is empty, check logs first, then client config, panel URLs, and cloud permissions.
 
 ## Online upgrade
 
@@ -141,7 +180,7 @@ When a client version is older than the recommended version and supports online 
 - Select multiple clients and notify them in bulk.
 
 <Aside type="caution">
-  Online upgrade requires the client to be online and to meet the minimum supported update version. Other clients need manual upgrade.
+  Online upgrade requires the client to be online and to meet the minimum supported update version. Other clients need a manual upgrade.
 </Aside>
 
 ## FAQ
@@ -151,21 +190,29 @@ When a client version is older than the recommended version and supports online 
 Common causes:
 
 - The client is offline.
-- Platform credentials are not configured in the CLI.
-- Connection test has not passed.
-- The same business type is already added.
+- The platform is not configured in the CLI.
+- The resource catalog is empty, unavailable, or the key lacks permission.
+- The certificate SAN does not cover the selected resource domains.
+- The connection test has not passed.
+- Upload-only conflicts with another CLI business.
 - The certificate has reached its target count limit.
+
+### The catalog says not configured or no websites found
+
+- 1Panel / BT Panel websites: fill the panel URL and API key in the config generator or `config.yaml`, restart the client, then refresh.
+- Cloud CDN / load balancers: confirm the provider credentials are on the client and the listed Actions are granted.
+- If the catalog is only partly available, see the deploy client log for the full error.
 
 ### What if manual deployment fails?
 
 Check:
 
 1. The client is online.
-2. Platform credentials are still valid.
-3. The business target exists and has write permission.
+2. Platform or panel credentials are still valid.
+3. The selected resource still exists and is writable.
 4. The certificate is bound to the client.
 5. The specific error in the log dialog.
 
 ### Does deleting a client delete certificates?
 
-No. Deleting a deployment client removes that client record and related deployment links, but it does not delete certificate files from certificate management.
+No. Deleting a deployment client removes that client record and related deployment links. It does not delete certificates from certificate management.

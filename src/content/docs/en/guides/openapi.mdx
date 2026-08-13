@@ -1,0 +1,64 @@
+---
+title: Open platform
+description: Call the certificate OpenAPI with an Access Key, and debug requests in Playground.
+sidebar:
+  label: Open Platform
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+The open platform covers certificate apply, renew, revoke, record delete, domain validation, async operation status, and download. Full fields and examples live on the public [Open platform API](https://anssl.cn/open-platform) page. The console entry is [Developer](https://anssl.cn/console/developer).
+
+## Get credentials
+
+<Steps>
+
+1. **Open the developer page**
+
+   Sign in and go to [Developer](https://anssl.cn/console/developer).
+
+2. **Copy the Access Key**
+
+   Send `Authorization: Bearer YOUR_ACCESS_KEY`.
+
+3. **Reset the key if needed**
+
+   The old key stops working immediately. Update any scripts that still use it.
+
+</Steps>
+
+<Aside type="caution">
+  The Access Key has the same power as the account. Do not commit it, and do not show the full value in screenshots or recordings.
+</Aside>
+
+## Debug in Playground
+
+[API Playground](https://anssl.cn/console/developer/playground) sends requests to production OpenAPI with the current account key.
+
+- Read-only endpoints can be sent directly.
+- Apply, renew, revoke, delete, and private-key download ask for confirmation first.
+- Requests hit production and may create real certificate jobs or return an unencrypted private key.
+
+## Endpoints
+
+The public API is certificate lifecycle only. There is no monitor or automated-deployment API:
+
+| Method | Path | Purpose |
+| ------ | ---- | ------- |
+| POST | `/v1/cert/check-domain` | Prepare DNS-01 CNAME records and return saved status |
+| POST | `/v1/cert/apply` | apply / renew / revoke / delete |
+| GET | `/v1/cert-operations/{operationId}` | Query an async operation |
+| GET | `/v1/cert` | List certificates |
+| GET | `/v1/cert/{certKey}` | Certificate detail |
+| GET | `/v1/cert/{certKey}/download` | Download certificate and private key |
+
+## Validation
+
+- **DNS-01 (default)**: call `check-domain` first, then `apply`. Up to 100 names, wildcards allowed.
+- **HTTP-01**: set `verificationType=http`. Exactly one non-wildcard domain or IP. Do not call `check-domain`.
+
+Apply, renew, and revoke are async. Store `certKey`, `operationId`, and `requestKey`, then poll until `succeeded`, `failed`, or `canceled`.
+
+<Aside type="note">
+  Official language SDKs are not available yet. Call the HTTPS API directly, or verify the request in Playground.
+</Aside>

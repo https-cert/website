@@ -1,0 +1,69 @@
+---
+title: 配置生成器
+description: 生成 Nginx / Apache HTTPS 配置，或 anSSL 自动部署客户端的 config.yaml 和安装命令
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+配置生成器有两种模式：生成 Web 服务器 HTTPS 片段，或生成 deploy 客户端的 `config.yaml` 与安装命令。入口为 [配置生成器](https://anssl.cn/console/tools/config-generator)。
+
+## 自动部署配置
+
+用于把一台服务器接入 [自动部署](/guides/deploy)。
+
+<Steps>
+
+1. **打开自动部署模式**
+
+   在页面顶部切换到「自动部署」。也可从工具入口带 `?mode=deploy` 打开。
+
+2. **填写服务连接**
+
+   Access Key 使用当前账号密钥。HTTP-01 端口按实际挑战服务填写。
+
+3. **按需启用本地和面板目标**
+
+   - Nginx / Apache：填写证书目录。
+   - RustFS：填写 TLS 目录，可选 SSH。
+   - 飞牛：本机或 SSH。
+   - 1Panel / 宝塔 / 雷池：填写管理端地址和 API 密钥。自签名 HTTPS 面板可按需关闭证书校验。
+
+4. **按需添加云厂商**
+
+   只填写 AccessKey / Secret。CDN、负载均衡等具体资源不要写在配置里，上线后在自动部署页实时发现并关联。
+
+5. **下载配置并安装**
+
+   预览通过后下载 `config.yaml`，复制安装、落盘和启动命令到目标机器执行。完整配置包含密钥，只在可信设备上下载。
+
+</Steps>
+
+<Aside type="caution">
+  下载的真实 `config.yaml` 含 Access Key、SSH 密码、面板 Token 或云密钥。不要粘贴到聊天、工单或 Git 仓库。
+</Aside>
+
+## HTTPS 站点配置
+
+用于生成 Nginx 或 Apache 的 TLS 片段，可从已有免费证书或本地证书预填域名。
+
+<Steps>
+
+1. **切换到 HTTPS 站点配置**
+
+2. **选择服务器类型**
+
+   Nginx 或 Apache。
+
+3. **填写域名和证书路径**
+
+   主域名、别名、证书和私钥路径。也可从证书列表选择一张已签发证书来预填域名。
+
+4. **复制生成结果**
+
+   把片段粘贴到站点配置后执行 `nginx -t` 或等价检查，再重载服务。
+
+</Steps>
+
+<Aside type="tip">
+  若证书走 HTTP-01，自动部署模式还会给出 Nginx / Apache 反向代理片段，把挑战请求转到客户端监听端口。
+</Aside>

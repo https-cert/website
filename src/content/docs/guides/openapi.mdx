@@ -1,0 +1,62 @@
+---
+title: 开放平台
+description: 使用 Access Key 调用证书 OpenAPI，并在 Playground 中调试
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+开放平台提供证书申请、续签、吊销、删除记录、域名验证、异步状态查询和证书下载。完整字段和示例见公开页 [开放平台 API](https://anssl.cn/open-platform)。控制台入口为 [开发者](https://anssl.cn/console/developer)。
+
+## 获取凭证
+
+<Steps>
+
+1. **打开开发者页面**
+
+   登录后进入 [开发者](https://anssl.cn/console/developer)。
+
+2. **复制 Access Key**
+
+   请求头使用 `Authorization: Bearer YOUR_ACCESS_KEY`。
+
+3. **按需重置密钥**
+
+   重置后旧密钥立即失效，已接入的脚本需要同步更新。
+
+</Steps>
+
+<Aside type="caution">
+  Access Key 等同账号权限。不要提交到仓库，也不要在截图或录屏里完整展示。
+</Aside>
+
+## 在 Playground 调试
+
+[API Playground](https://anssl.cn/console/developer/playground) 用当前账号密钥直接请求生产 OpenAPI。
+
+- 只读接口可直接发送。
+- 申请、续签、吊销、删除和下载私钥会先确认副作用。
+- 请求会打到生产环境，可能创建真实证书任务或返回未加密私钥。
+
+## 接口范围
+
+当前公开接口只有证书生命周期，没有监控或自动部署 API：
+
+| 方法 | 路径 | 用途 |
+| ---- | ---- | ---- |
+| POST | `/v1/cert/check-domain` | 准备 DNS-01 CNAME 记录，返回已保存状态 |
+| POST | `/v1/cert/apply` | apply / renew / revoke / delete |
+| GET | `/v1/cert-operations/{operationId}` | 查询异步操作 |
+| GET | `/v1/cert` | 证书列表 |
+| GET | `/v1/cert/{certKey}` | 证书详情 |
+| GET | `/v1/cert/{certKey}/download` | 下载证书和私钥 |
+
+## 验证方式
+
+- **DNS-01（默认）**：先调 `check-domain` 准备 CNAME，再 `apply`。`domains` 最多 100 个，支持泛域名。
+- **HTTP-01**：`verificationType=http`。只需 1 个非泛域名或 IP，不必调用 `check-domain`。
+
+申请、续签、吊销是异步的。保存返回的 `certKey`、`operationId` 和 `requestKey`，轮询操作状态直到 `succeeded`、`failed` 或 `canceled`。
+
+<Aside type="note">
+  官方语言 SDK 尚未开放。请直接调用 HTTPS API，或使用控制台 Playground 验证请求。
+</Aside>

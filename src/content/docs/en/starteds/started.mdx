@@ -196,11 +196,11 @@ systemctl restart apache2
 
 anssl can deploy certificates for you on a schedule:
 
-1. Open **Automatic Deployment** in the console.  
-2. Select the certificate you just issued.  
-3. Configure deployment targets (server credentials or cloud provider tokens).  
-4. Run a deployment test to confirm connectivity.  
-5. Enable automatic deployment to sync changes after each renewal.
+1. Use the [config generator](/en/guides/tools/config-generator) to create `config.yaml` and install the CLI on the server.
+2. Wait for the client to come online on **Automated deployment**.
+3. Bind the certificate.
+4. Choose a local, panel, or cloud target. CDN hostnames, load-balancer listeners, and panel sites are discovered by the client.
+5. Test the connection, add the target, and enable automated deployment.
 
 See the [deployment guide](/en/guides/deploy) for detailed configuration steps.
 

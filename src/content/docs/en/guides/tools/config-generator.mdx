@@ -1,0 +1,71 @@
+---
+title: Config generator
+description: Generate Nginx or Apache HTTPS snippets, or anSSL deploy client config.yaml and install commands.
+sidebar:
+  label: Config Generator
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+The config generator has two modes: HTTPS server snippets, or a deploy-client `config.yaml` plus install commands. Open it at [Config generator](https://anssl.cn/console/tools/config-generator).
+
+## Automated deployment config
+
+Use this to connect a host to [Automated deployment](/en/guides/deploy).
+
+<Steps>
+
+1. **Switch to automated deployment**
+
+   Use the top switch, or open the tool with `?mode=deploy`.
+
+2. **Fill server connection**
+
+   Use the current account Access Key. Set the HTTP-01 port to match the challenge listener.
+
+3. **Enable local and panel targets as needed**
+
+   - Nginx / Apache: certificate directories.
+   - RustFS: TLS directory, optional SSH.
+   - fnOS: local or SSH.
+   - 1Panel / BT Panel / SafeLine: admin URL and API key. You can skip TLS verify for a trusted self-signed panel.
+
+4. **Add cloud providers as needed**
+
+   Store only AccessKey / Secret here. Do not put CDN or load-balancer IDs in the file. Discover and bind those resources later on the automated deployment page.
+
+5. **Download and install**
+
+   After validation, download `config.yaml` and run the install, install-config, and start commands on the target host. The full file contains secrets; download it only on a trusted device.
+
+</Steps>
+
+<Aside type="caution">
+  A real `config.yaml` includes the Access Key, SSH password, panel token, or cloud secret. Do not paste it into chat, tickets, or Git.
+</Aside>
+
+## HTTPS site config
+
+Generate an Nginx or Apache TLS snippet. Domains can be prefilled from a managed or self-signed certificate.
+
+<Steps>
+
+1. **Switch to HTTPS site config**
+
+2. **Choose the server**
+
+   Nginx or Apache.
+
+3. **Enter domains and certificate paths**
+
+   Primary name, aliases, certificate path, and private-key path. You can also pick an issued certificate to prefills domains.
+
+4. **Copy the result**
+
+   Paste the snippet into the site config, run `nginx -t` or the Apache equivalent, then reload.
+
+</Steps>
+
+<Aside type="tip">
+  For HTTP-01, the automated-deployment mode also emits Nginx / Apache reverse-proxy snippets that forward challenge requests to the client listener.
+</Aside>

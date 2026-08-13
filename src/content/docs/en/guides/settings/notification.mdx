@@ -116,18 +116,13 @@ Send reminder notifications when certificates are about to expire.
 
 **Configuration Options:**
 - **Enable/Disable**: Toggle this notification type
-- **Days in Advance**: How many days before expiration to start reminders (recommended: 30 days)
+- **Days in Advance**: Configurable, default 15 days
 - **Notification Channels**: Select channels to receive notifications (multiple selections allowed)
 
-**Reminder Frequency:**
-- 30 days before expiry: First reminder
-- 15 days before expiry: Second reminder
-- 7 days before expiry: Third reminder
-- 3 days before expiry: Urgent reminder
-- 1 day before expiry: Final reminder
+Short-lived certificates also get two extra reminders at 2 days and 1 day remaining.
 
-<Aside type="caution">
-  Even if expiration reminders are disabled, the system will still send an urgent notification on the day the certificate expires.
+<Aside type="note">
+  Domain monitoring has its own reminder-days setting, also defaulting to 15 days, configured separately from certificate expiry reminders.
 </Aside>
 
 ### Certificate Application Events
@@ -169,8 +164,9 @@ Send alerts when domain monitoring detects certificate issues.
 **Alert Trigger Conditions:**
 - Certificate expiring soon
 - Certificate expired
-- Certificate validation failed
-- Domain resolution errors
+- Certificate invalid
+- Detection failed
+- Unreachable
 
 **Notification Content:**
 - Monitored domain
