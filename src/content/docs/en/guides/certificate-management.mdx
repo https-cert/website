@@ -56,7 +56,7 @@ The request dialog has four steps: domain configuration, certificate options, de
 
 2. **Configure domains and validation**
 
-   - DNS-01: uses CNAME validation and works well for wildcards and renewals.
+   - DNS-01: uses CNAME validation and works well for wildcards and renewals. Add records manually or configure them with an online deployment client.
    - HTTP-01: uses an HTTP validation file and works for publicly reachable single domains or IP addresses.
 
    Enter multiple domains one per line. Wildcard domains must use DNS-01.
@@ -83,7 +83,11 @@ The request dialog has four steps: domain configuration, certificate options, de
 
 ### DNS-01 / CNAME validation
 
-DNS-01 shows the required CNAME record. After updating DNS, refresh the validation status. Forced refresh has a short cooldown to avoid excessive checks.
+DNS-01 shows the required CNAME record. Add it manually, or click **Configure CNAME automatically** to let the deployment CLI call the DNS provider API with credentials stored locally. Before writing, the client checks the provider, credentials, and existing records. Matching records are not duplicated, and conflicting records are never overwritten. Supported providers are Cloudflare, Alibaba Cloud DNS, Tencent DNSPod, Huawei Cloud DNS, Baidu Cloud DNS, JD Cloud DNS, and Volcengine DNS.
+
+Automatic configuration requires an online, enabled deployment client that supports DNS CNAME configuration, with the relevant provider credentials in its local `config.yaml`. Upgrade older CLI versions that do not report DNS CNAME capability. Credentials remain on the client and are not uploaded to the platform. The DNS configuration client can be different from the client used to deploy the issued certificate. If no compatible client is available or your provider is not supported, enter the displayed record name and value at your DNS provider.
+
+The dialog checks and configures records individually. Large batches are paginated, results arrive per record, and a failure does not roll back other successful records. A successful or existing record at the provider does not mean it has propagated to public DNS: the page starts DNS verification, and you can continue only after verification passes. Keep these CNAME records so future renewals can use them. Manual verification refresh has a short cooldown.
 
 Use DNS-01 for:
 

@@ -28,15 +28,19 @@ import { Aside, Steps } from "@astrojs/starlight/components";
    - 飞牛：本机或 SSH。
    - 1Panel / 宝塔 / 雷池：填写管理端地址和 API 密钥。自签名 HTTPS 面板可按需关闭证书校验。
 
-4. **按需添加云厂商**
+4. **按需添加云厂商和 DNS 服务商**
 
-   只填写 AccessKey / Secret。CDN、负载均衡等具体资源不要写在配置里，上线后在自动部署页实时发现并关联。
+   证书部署所需的云厂商配置与 DNS 配置共用本地 `provider` 凭据。DNS-01 申请时的一键配置支持 Cloudflare、阿里云 DNS、腾讯云 DNSPod、华为云 DNS、百度智能云 DNS、京东云 DNS 和火山引擎 DNS。Cloudflare 使用 API Token，并限定 `Zone:Read`、`DNS:Read`、`DNS:Edit` 权限及所需 Zone；其余服务商按配置生成器显示的 DNS 查询和新增权限配置密钥。只填写 AccessKey / Secret 或 Token；CDN、负载均衡等具体资源不要写在配置里，上线后在自动部署页实时发现并关联。
 
 5. **下载配置并安装**
 
    预览通过后下载 `config.yaml`，复制安装、落盘和启动命令到目标机器执行。完整配置包含密钥，只在可信设备上下载。
 
 </Steps>
+
+<Aside type="tip">
+  DNS 凭据只保存在自动部署 CLI 的 `config.yaml` 中，不会上传到平台。配置证书部署所需的云厂商凭据时，应按实际用途另行授予相应权限；DNS CNAME 配置本身不需要证书中心或 CDN 权限。
+</Aside>
 
 <Aside type="caution">
   下载的真实 `config.yaml` 含 Access Key、SSH 密码、面板 Token 或云密钥。不要粘贴到聊天、工单或 Git 仓库。

@@ -30,15 +30,19 @@ Use this to connect a host to [Automated deployment](/en/guides/deploy).
    - fnOS: local or SSH.
    - 1Panel / BT Panel / SafeLine: admin URL and API key. You can skip TLS verify for a trusted self-signed panel.
 
-4. **Add cloud providers as needed**
+4. **Add cloud and DNS providers as needed**
 
-   Store only AccessKey / Secret here. Do not put CDN or load-balancer IDs in the file. Discover and bind those resources later on the automated deployment page.
+   Certificate deployment and DNS configuration share the local `provider` credentials. One-click DNS-01 CNAME configuration supports Cloudflare, Alibaba Cloud DNS, Tencent DNSPod, Huawei Cloud DNS, Baidu Cloud DNS, JD Cloud DNS, and Volcengine DNS. For Cloudflare, use an API Token scoped to the required zones with `Zone:Read`, `DNS:Read`, and `DNS:Edit`. For other providers, grant the DNS read and create permissions shown in the config generator. Store only the required AccessKey / Secret or token. Do not put CDN or load-balancer IDs in the file; discover and bind those resources later on the automated deployment page.
 
 5. **Download and install**
 
    After validation, download `config.yaml` and run the install, install-config, and start commands on the target host. The full file contains secrets; download it only on a trusted device.
 
 </Steps>
+
+<Aside type="tip">
+  DNS credentials stay in the deploy CLI's local `config.yaml` and are not uploaded to the platform. Grant separate permissions for certificate deployment when needed; DNS CNAME configuration does not require certificate-center or CDN permissions.
+</Aside>
 
 <Aside type="caution">
   A real `config.yaml` includes the Access Key, SSH password, panel token, or cloud secret. Do not paste it into chat, tickets, or Git.

@@ -95,20 +95,23 @@ First-time users see a welcome screen with shortcuts to common tasks.
 
 7. **Choose a validation method**
 
-   anssl supports multiple validation flows:
+   anssl supports two validation methods:
 
-   **DNS verification** (recommended):
+   **DNS-01 validation** (recommended):
 
-   - Add the requested TXT record to your DNS provider.  
-   - Works for every certificate type, including wildcards.
+   - anssl prepares a CNAME validation record for each domain.
+   - If you have an online, enabled deployment client with DNS support, click **Configure CNAME automatically**. Use the [config generator](/en/guides/tools/config-generator) to configure a client if needed. DNS credentials stay on the client, and older CLI versions must be upgraded to one that supports DNS CNAME configuration.
+   - If no compatible client is available or your DNS provider is not supported, add the displayed records manually.
+   - Works well for multi-domain and wildcard certificates.
 
-   **HTTP verification** (coming soon):
+   **HTTP-01 validation**:
 
-   - Upload the provided challenge file to your site root.  
-   - Ideal for domains already serving content.  
-   - Not supported for wildcard certificates.
+   - The CA retrieves an HTTP challenge from your domain over the public internet.
+   - Use it for publicly reachable websites and IP certificates. Wildcard certificates require DNS-01.
 
-8. **Complete domain validation**
+8. **Verify domain ownership**
+
+   For DNS-01, click **Verify DNS** to check public resolution. Automatic configuration only confirms that the DNS provider accepted or already had the record; wait for propagation and pass verification before continuing.
 
 9. **Wait for issuance**
 
@@ -121,7 +124,7 @@ First-time users see a welcome screen with shortcuts to common tasks.
 </Steps>
 
 <Aside type="tip">
-  DNS propagation can take 5–30 minutes. If validation fails, wait a bit and try again after confirming the record resolves.
+  DNS propagation time depends on the provider and cached responses. If the record is not visible yet, wait and verify again. Confirm that the CNAME name and value match the values shown in the form.
 </Aside>
 
 ## Step 4: Deploy the certificate
